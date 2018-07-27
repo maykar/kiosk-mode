@@ -7,7 +7,7 @@ title: Lovelace Demo
 views:
   - title: Home
     icon: mdi:heart
-    id: kiosk
+    id: kiosk_thermostat
     panel: true
     cards:
       - type: custom:thermostat-card
