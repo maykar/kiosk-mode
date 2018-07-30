@@ -11,7 +11,12 @@ if (window.location.href.indexOf('kiosk') > 0)
             const lovelace = pages.querySelector('ha-panel-lovelace').shadowRoot;
             const huiroot = lovelace.querySelector('hui-root').shadowRoot;
             const header = huiroot.querySelector('app-header');
-            header.style.display = 'none';
+            const toolbar = huiroot.querySelector('app-toolbar');
+            if (window.location.href.indexOf('show_tabs') > 0) {
+                toolbar.style.display = 'none';
+            } else {
+                header.style.display = 'none';
+            }
             app_toolbar.querySelector('paper-icon-button').click();
             window.dispatchEvent(new Event('resize'));
         }
