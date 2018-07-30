@@ -6,7 +6,13 @@ Add `kiosk.js` file with the content below to your `www` folder in config.
 
 Like any other custom script, use `ui-lovelace.yaml` resources section to reference the `kiosk.js` file.
 
-Make sure you add `kiosk` in the id for your view 
+Make sure you add `kiosk` somewhere in your URL. You can use it in the id of your view or in the query string.
+
+Examples:
+
+```
+/lovelace/0?kiosk
+```
 
 ```yaml
 views:
@@ -15,10 +21,11 @@ views:
     id: kiosk_alarm
 ```
 
-You can also use query string on existing views:
+## Keep tabs
+If you still want to keep the Lovelace tabs and hide everything else use add `show_tabs` in your URL as query string.
 
 ```
-/lovelace/0?kiosk
+/lovelace/0?kiosk&show_tabs
 ```
 
 ## Note
