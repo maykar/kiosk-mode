@@ -21,13 +21,6 @@ views:
     id: kiosk_alarm
 ```
 
-## Keep tabs
-If you still want to keep the Lovelace tabs and hide everything else use add `show_tabs` in your URL as query string.
-
-```
-/lovelace/0?kiosk&show_tabs
-```
-
 ## Note
 
 If this is your first file in `www` make sure you restart Home Assistant.
