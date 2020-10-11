@@ -21,7 +21,8 @@ if (window.location.href.indexOf('kiosk') > 0) {
                 .querySelector("div.menu")
                 .click();
             window.dispatchEvent(new Event('resize'));
-        } catch (e) {
+        } 
+        catch (e) {
             console.log(e);
         }
     }, 200);
