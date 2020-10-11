@@ -18,7 +18,7 @@ if (window.location.href.indexOf('kiosk') > 0) {
             home_assistant_main.style.setProperty("--app-drawer-width", 0);
             home_assistant_main.shadowRoot
                 .querySelector("#drawer > ha-sidebar").shadowRoot
-                .querySelector("div.menu > paper-icon-button")
+                .querySelector("div.menu")
                 .click();
             window.dispatchEvent(new Event('resize'));
         }
