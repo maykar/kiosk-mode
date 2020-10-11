@@ -1,26 +1,23 @@
-# Kiosk mode
+kiosk-mode
+=================
 
-## Installation
+Hides header and sidebar drawer in [Home Assistant](https://www.home-assistant.io/).
 
-Add `kiosk.js` file with the content below to your `www` folder in config.
-
-Like any other custom script, use `ui-lovelace.yaml` resources section to reference the `kiosk.js` file.
-
-Make sure you add `kiosk` somewhere in your URL. You can use it in the id of your view or in the query string.
-
-Examples:
-
-```
-/lovelace/0?kiosk
-```
+Manual installation: Download [kiosk.js](https://raw.githubusercontent.com/matt8707/kiosk/master/kiosk.js) and place it in your `www` folder. If you have trouble installing [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins).
 
 ```yaml
-views:
-  - title: Kiosk
-    icon: mdi:heart
-    id: kiosk_alarm
+resources:
+  - url: /local/kiosk.js
+    type: js
+```
+
+## Usage
+Add the query string `?kiosk` to the end of your URL. 
+
+```
+https://hass:8123/lovelace/default_view?kiosk
 ```
 
 ## Note
 
-If this is your first file in `www` make sure you restart Home Assistant.
+If you previously used [custom-header](https://github.com/maykar/custom-header) you need to completely uninstall it from [HACS](https://github.com/hacs/integration).
