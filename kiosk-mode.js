@@ -1,28 +1,27 @@
 if (window.location.href.indexOf('kiosk') > 0) {
-    setTimeout(function () {
+    setTimeout(function() {
         try {
-            const home_assistant_main =  document
-                  .querySelector("body > home-assistant").shadowRoot
-                  .querySelector("home-assistant-main");
-            
+            const home_assistant_main = document
+                .querySelector("body > home-assistant").shadowRoot
+                .querySelector("home-assistant-main");
+
             const header = home_assistant_main.shadowRoot
-                  .querySelector("app-drawer-layout > partial-panel-resolver > ha-panel-lovelace").shadowRoot
-                  .querySelector("hui-root").shadowRoot
-                  .querySelector("#layout > app-header")
-                  .style.display = "none";
-            
+                .querySelector("app-drawer-layout > partial-panel-resolver > ha-panel-lovelace").shadowRoot
+                .querySelector("hui-root").shadowRoot
+                .querySelector("#layout > app-header")
+                .style.display = "none";
+
             const drawer = home_assistant_main.shadowRoot
-                  .querySelector("#drawer")
-                  .style.display = 'none';
-            
+                .querySelector("#drawer")
+                .style.display = 'none';
+
             home_assistant_main.style.setProperty("--app-drawer-width", 0);
             home_assistant_main.shadowRoot
                 .querySelector("#drawer > ha-sidebar").shadowRoot
                 .querySelector("div.menu")
                 .click();
             window.dispatchEvent(new Event('resize'));
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
         }
     }, 200);
