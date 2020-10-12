@@ -4,7 +4,7 @@
 
 Hides the header and sidebar drawer in [Home Assistant](https://www.home-assistant.io/)
 
-![image](example.png)
+![image](example1.png)
 
 ## Installation
 
