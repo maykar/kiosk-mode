@@ -12,12 +12,12 @@ Hides the header and sidebar drawer in [Home Assistant](https://www.home-assista
 
 ### HACS
 
-Search for `kiosk-mode` and install it. Add to resources using UI or `configuration.yaml`
+Search for `Kiosk Mode` and install it. Add to resources using UI or `configuration.yaml`
 
 ```yaml
 resources:
   - url: /hacsfiles/kiosk-mode/kiosk-mode.js
-    type: js
+    type: module
 ```
 
 ### Manual
@@ -27,7 +27,7 @@ Download [kiosk-mode.js](https://raw.githubusercontent.com/matt8707/kiosk-mode/m
 ```yaml
 resources:
   - url: /local/kiosk-mode.js
-    type: js
+    type: module
 ```
 
 *If you have trouble installing please [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins)*
