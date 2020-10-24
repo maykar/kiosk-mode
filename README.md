@@ -48,6 +48,8 @@ views:
 
 ```
 
+Optional query strings are `?hide_header` and `?hide_sidebar`
+
 ### Related
 
 * [Fully Kiosk Browser](https://www.fully-kiosk.com/) - Great for wall mounted tablets
