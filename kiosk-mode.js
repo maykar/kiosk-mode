@@ -8,7 +8,7 @@ if (window.location.href.indexOf('kiosk') > 0) {
             const header = home_assistant_main.shadowRoot
                 .querySelector("app-drawer-layout > partial-panel-resolver > ha-panel-lovelace").shadowRoot
                 .querySelector("hui-root").shadowRoot
-                .querySelector("#layout > app-header")
+                .querySelector("#layout > app-header > app-toolbar")
                 .style.display = "none";
 
             const drawer = home_assistant_main.shadowRoot
