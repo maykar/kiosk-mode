@@ -27,11 +27,10 @@ const getSidebarElem = () => {
 };
 
 setTimeout(() => {
-  const header = getHeaderElem();
-  const sidebar = getSidebarElem();
-
   // Only run if location includes one of the keywords.
   if (locIncludes(["kiosk", "hide_header", "hide_sidebar"])) {
+    const header = getHeaderElem();
+    const sidebar = getSidebarElem();
     // Insert style element for kiosk or hide_header options.
     if (locIncludes(["kiosk", "hide_header"])) {
       if (header) {
