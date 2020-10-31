@@ -32,11 +32,10 @@ setTimeout(() => {
     const header = getHeaderElem();
     const sidebar = getSidebarElem();
     // Insert style element for kiosk or hide_header options.
-    if (locIncludes(["kiosk", "hide_header"])) {
-      if (header) {
-        const style = document.createElement("style");
-        style.setAttribute("id", "kiosk_mode");
-        style.innerHTML = `
+    if (locIncludes(["kiosk", "hide_header"]) && header) {
+      const style = document.createElement("style");
+      style.setAttribute("id", "kiosk_mode");
+      style.innerHTML = `
             #view {
               min-height: 100vh !important;
             }
@@ -44,15 +43,13 @@ setTimeout(() => {
               display: none;
             }
           `;
-        header.appendChild(style);
-      }
+      header.appendChild(style);
     }
     // Insert style element for kiosk or hide_sidebar options.
-    if (locIncludes(["kiosk", "hide_sidebar"])) {
-      if (sidebar) {
-        const style = document.createElement("style");
-        style.setAttribute("id", "kiosk_mode");
-        style.innerHTML = `
+    if (locIncludes(["kiosk", "hide_sidebar"]) && sidebar) {
+      const style = document.createElement("style");
+      style.setAttribute("id", "kiosk_mode");
+      style.innerHTML = `
             :host {
               --app-drawer-width: 0 !important;
             }
@@ -60,8 +57,7 @@ setTimeout(() => {
               display: none;
             }
           `;
-        sidebar.appendChild(style);
-      }
+      sidebar.appendChild(style);
     }
   }
   window.dispatchEvent(new Event("resize"));
