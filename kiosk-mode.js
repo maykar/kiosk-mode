@@ -1,34 +1,71 @@
-const home_assistant_main = document
-  .querySelector("body > home-assistant")
-  .shadowRoot.querySelector("home-assistant-main");
+// Return true if any keyword is found in location.
+const locIncludes = (keywords) => {
+  return keywords.some((x) => window.location.href.includes(x));
+};
 
-const header = home_assistant_main.shadowRoot
-  .querySelector("app-drawer-layout > partial-panel-resolver > ha-panel-lovelace")
-  .shadowRoot.querySelector("hui-root")
-  .shadowRoot.querySelector("#layout > app-header");
-
-const drawer = home_assistant_main.shadowRoot.querySelector("#drawer");
-
-setTimeout(function () {
+const getHeaderElem = () => {
   try {
-    if (window.location.href.includes("kiosk")) {
-      header.style.display = "none";
-      drawer.style.display = "none";
-      home_assistant_main.style.setProperty("--app-drawer-width", 0);
-      window.dispatchEvent(new Event("resize"));
-    }
-    if (window.location.href.includes("hide_header")) {
-      header.style.display = "none";
-      window.dispatchEvent(new Event("resize"));
-    }
-    if (window.location.href.includes("hide_sidebar")) {
-      drawer.style.display = "none";
-      home_assistant_main.style.setProperty("--app-drawer-width", 0);
-      window.dispatchEvent(new Event("resize"));
-    }
-  } catch (e) {
-    console.log(e);
+    return document
+      .querySelector("home-assistant")
+      .shadowRoot.querySelector("home-assistant-main")
+      .shadowRoot.querySelector("ha-panel-lovelace")
+      .shadowRoot.querySelector("hui-root").shadowRoot;
+  } catch {
+    return false;
   }
+};
+
+const getSidebarElem = () => {
+  try {
+    return document
+      .querySelector("home-assistant")
+      .shadowRoot.querySelector("home-assistant-main")
+      .shadowRoot.querySelector("app-drawer-layout");
+  } catch {
+    return false;
+  }
+};
+
+setTimeout(() => {
+  const header = getHeaderElem();
+  const sidebar = getSidebarElem();
+
+  // Only run if location includes one of the keywords.
+  if (locIncludes(["kiosk", "hide_header", "hide_sidebar"])) {
+    // Insert style element for kiosk or hide_header options.
+    if (locIncludes(["kiosk", "hide_header"])) {
+      if (header) {
+        const style = document.createElement("style");
+        style.setAttribute("id", "kiosk_mode");
+        style.innerHTML = `
+            #view {
+              min-height: 100vh !important;
+            }
+            app-header {
+              display: none;
+            }
+          `;
+        header.appendChild(style);
+      }
+    }
+    // Insert style element for kiosk or hide_sidebar options.
+    if (locIncludes(["kiosk", "hide_sidebar"])) {
+      if (sidebar) {
+        const style = document.createElement("style");
+        style.setAttribute("id", "kiosk_mode");
+        style.innerHTML = `
+            :host {
+              --app-drawer-width: 0 !important;
+            }
+            #drawer {
+              display: none;
+            }
+          `;
+        sidebar.appendChild(style);
+      }
+    }
+  }
+  window.dispatchEvent(new Event("resize"));
 }, 200);
 
 console.info(
