@@ -15,7 +15,7 @@ Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assi
 <details>
   <summary><b>Installation and tracking with HACS</b></summary>
 
-* In the "Frontend" section hit the plus icon in the bottom right
+* In the "Frontend" section of [HACS](https://github.com/hacs/integration) hit the plus icon in the bottom right
 * Search for `Kiosk Mode` and install it
 * If using YAML mode or if HACS doesn't automatically add it you'll need to add the resource below
 
