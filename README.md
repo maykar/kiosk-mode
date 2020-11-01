@@ -63,4 +63,4 @@ If you add cache to the end of the URL it will cache your preferences and will p
 * [KTibow/fullscreen-card](https://github.com/KTibow/fullscreen-card) - Make your Home Assistant browser fullscreen
 
 ### Credit
-This is based on [ciotlosm's kiosk mode gist](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and includes features from [corrafig's gist](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) as well as [maykar's Custom Header](https://github.com/maykar/custom-header/).
+This is based on [ciotlosm's kiosk mode gist](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and includes features from [corrafig's fork](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) as well as [maykar's Custom Header](https://github.com/maykar/custom-header/).
