@@ -58,7 +58,7 @@ If you add `cache` to the end of the URL it will cache your preferences so that 
 
 Example: `?hide_header&cache` will make it so that every view and dashboard will hide the header (works for all options).
 
-Putting `?clear_cache` in the URL will clear those cached preferences and adding `?disable_kiosk` will temporarily disable any modification.
+Putting `?clear_cache` in the URL will clear those cached preferences and adding `?disable_kiosk` will temporarily disable any modification.<br>
 You can also set your cache per device, so you can set `?hide_header&cache` on one device and `?kiosk&cache` on another.
 
 ### Related
