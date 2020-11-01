@@ -54,12 +54,14 @@ Optional query strings are `?hide_header` and `?hide_sidebar`. For example, you 
 
 ### Cache
 
-If you add `cache` to the end of the URL it will cache your preferences so that they will persist between views and dashboards.
+You save settings in a devices cache by using the cache keyword once on the device.<br>This will also make it so the options work on all views and dashboards.
 
-Example: `?hide_header&cache` will make it so that every view and dashboard will hide the header (works for all options).
+Example: `?hide_header&cache` will make every view and dashboard hide the header, this works for all query strings.
 
-Putting `?clear_cache` in the URL will clear those cached preferences and adding `?disable_kiosk` will temporarily disable any modification.<br>
-You can also set your cache per device, so you can set `?hide_header&cache` on one device and `?kiosk&cache` on another.
+**Utility Query Strings**
+
+* `?clear_cache` in the URL will clear all cached preferences
+* `?disable_kiosk` will temporarily disable any modification
 
 ### Related
 
