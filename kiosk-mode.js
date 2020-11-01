@@ -47,7 +47,11 @@ const kiosk_mode = () => {
       const header = getHeaderElem();
       const sidebar = getSidebarElem();
       // Insert style element for kiosk or hide_header options.
-      if ((locIncludes(["kiosk", "hide_header"]) || hide_header) && header) {
+      if (
+        (locIncludes(["kiosk", "hide_header"]) || hide_header) &&
+        header &&
+        !header.querySelector("#kiosk_mode")
+      ) {
         const style = document.createElement("style");
         style.setAttribute("id", "kiosk_mode");
         style.innerHTML = `
@@ -65,7 +69,11 @@ const kiosk_mode = () => {
         }
       }
       // Insert style element for kiosk or hide_sidebar options.
-      if ((locIncludes(["kiosk", "hide_sidebar"]) || hide_sidebar) && sidebar) {
+      if (
+        (locIncludes(["kiosk", "hide_sidebar"]) || hide_sidebar) &&
+        sidebar &&
+        !sidebar.querySelector("#kiosk_mode")
+      ) {
         const style = document.createElement("style");
         style.setAttribute("id", "kiosk_mode");
         style.innerHTML = `
