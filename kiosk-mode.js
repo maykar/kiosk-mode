@@ -28,8 +28,8 @@ const getSidebarElem = () => {
 
 // Clear cache if requested
 if (window.location.href.includes("clear_cache")) {
-  window.localStorage.removeItem("kmHeader");
-  window.localStorage.removeItem("kmSidebar");
+  window.localStorage.setItem("kmHeader", "false");
+  window.localStorage.setItem("kmSidebar", "false");
 }
 
 // Retrieve local storage cache as bool
@@ -37,10 +37,7 @@ const hide_header = window.localStorage.getItem("kmHeader") == "true";
 const hide_sidebar = window.localStorage.getItem("kmSidebar") == "true";
 
 // If any from local storage are true
-const run = hide_sidebar || hide_header;
-
-console.log(hide_header, hide_sidebar, run);
-console.log(locIncludes(["kiosk", "hide_header", "hide_sidebar"]) || run);
+const run = !!(hide_sidebar || hide_header);
 
 const kiosk_mode = () => {
   setTimeout(() => {
@@ -97,6 +94,8 @@ new MutationObserver(kiosk_mode).observe(
     .shadowRoot.querySelector("partial-panel-resolver"),
   { childList: true }
 );
+
+kiosk_mode();
 
 console.info(
   `%c  KIOSK-MODE   \n%c Version 1.1.0 `,
