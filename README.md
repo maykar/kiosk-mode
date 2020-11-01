@@ -2,7 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 
-Hides the header and sidebar drawer in [Home Assistant](https://www.home-assistant.io/)
+Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assistant.io/)
 
 ![image](example1.png)
 
@@ -10,9 +10,17 @@ Hides the header and sidebar drawer in [Home Assistant](https://www.home-assista
 
 *If you previously used [custom-header](https://github.com/maykar/custom-header) you need to uninstall it from [HACS](https://hacs.xyz/)*
 
-### HACS
+Follow only one of two installation methods below:
 
-Search for `Kiosk Mode` and install it. Add to resources using UI or `configuration.yaml`
+<details>
+  <summary><b>1. Installation and tracking with HACS:</b></summary>
+
+* In the "Frontend" section hit the plus icon in the bottom right
+* Search for `Kiosk Mode` and install it
+* If using YAML mode or if HACS doesn't automatically add it you'll need to add the resource below
+
+YAML mode users will add it to their [configuration.yaml](https://www.home-assistant.io/lovelace/dashboards-and-views/#adding-more-dashboards-with-yaml) file.
+Non-YAML mode, or Storage Mode, users can find resources in their sidebar under `"Configuration" > "Lovelace Dashboards" > "Resources"`
 
 ```yaml
 resources:
@@ -20,20 +28,30 @@ resources:
     type: module
 ```
 
-### Manual
+</details>
 
-Download [kiosk-mode.js](https://raw.githubusercontent.com/matt8707/kiosk-mode/master/kiosk-mode.js) and place it in your `www` folder. Add to resources using UI or `configuration.yaml`
+<details>
+  <summary><b>2. Manual installation:</b></summary>
+
+* Download [kiosk-mode.js](https://raw.githubusercontent.com/matt8707/kiosk-mode/master/kiosk-mode.js) and place it in your `www` folder
+* Add the resource below
+
+YAML mode users add it to their [configuration.yaml](https://www.home-assistant.io/lovelace/dashboards-and-views/#adding-more-dashboards-with-yaml) file.
+Non-YAML mode, or Storage Mode, users can find resources in their sidebar under `"Configuration" > "Lovelace Dashboards" > "Resources"`
 
 ```yaml
 resources:
-  - url: /local/kiosk-mode.js
+  # You'll need to update the version number at the end of the url after every update.
+  - url: /local/kiosk-mode.js?v=1.2.1
     type: module
 ```
+
+</details>
 
 *If you have trouble installing please [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins)*
 
 ## Usage
-Add the query string `?kiosk` to the end of your URL
+Add a query string such as `?kiosk` to the end of your URL:
 
 ```
 https://hass:8123/lovelace/default_view?kiosk
@@ -48,11 +66,15 @@ views:
 
 ```
 
-## Additional options
+## Query Strings
 
-Optional query strings are `?hide_header` and `?hide_sidebar`. For example, you can just hide the sidebar to still be able to navigate between views.
+The query strings options are:
 
-### Cache
+* `?kiosk` to hide both header and sidebar
+* `?hide_header` to hide only the header
+* `?hide_sidebar` to hide only the sidebar
+
+## Cache
 
 You save settings in a devices cache by using the cache keyword once on the device.<br>This will also make it so the options work on all views and dashboards.
 
