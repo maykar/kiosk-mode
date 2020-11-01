@@ -31,7 +31,7 @@ resources:
 </details>
 
 <details>
-  <summary><b>Manual installation:</b></summary>
+  <summary><b>Manual installation</b></summary>
 
 * Download [kiosk-mode.js](https://raw.githubusercontent.com/matt8707/kiosk-mode/master/kiosk-mode.js) and place it in your `www` folder
 * Add the resource below
