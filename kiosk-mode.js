@@ -26,35 +26,56 @@ const getSidebarElem = () => {
   }
 };
 
-// Clear cache if requested
+const getPanelElem = () => {
+  try {
+    return document
+      .querySelector("home-assistant")
+      .shadowRoot.querySelector("home-assistant-main")
+      .shadowRoot.querySelector("partial-panel-resolver");
+  } catch {
+    return false;
+  }
+};
+
+// Check if element exists and if style element already exists.
+const styleCheck = (elem) => {
+  return elem && !elem.querySelector("#kiosk_mode");
+};
+
+// Insert style element.
+const addStyles = (css, elem) => {
+  const style = document.createElement("style");
+  style.setAttribute("id", "kiosk_mode");
+  style.innerHTML = css;
+  elem.appendChild(style);
+};
+
+// Clear cache if requested.
 if (window.location.href.includes("clear_cache")) {
   window.localStorage.setItem("kmHeader", "false");
   window.localStorage.setItem("kmSidebar", "false");
 }
 
-// Retrieve local storage cache as bool
-const hide_header = window.localStorage.getItem("kmHeader") == "true";
-const hide_sidebar = window.localStorage.getItem("kmSidebar") == "true";
-
-// If any from local storage are true
-const run = !!(hide_sidebar || hide_header);
-
 const kiosk_mode = () => {
+  // Retrieve local storage cache as bool.
+  const hide_header = window.localStorage.getItem("kmHeader") == "true";
+  const hide_sidebar = window.localStorage.getItem("kmSidebar") == "true";
+
+  // If any from local storage are true.
+  const run = hide_sidebar || hide_header;
+
   setTimeout(() => {
+    // Disable styling if "disable_kiosk" in URL.
     if (window.location.href.includes("disable_kiosk")) return;
+
     // Only run if location includes one of the keywords.
     if (locIncludes(["kiosk", "hide_header", "hide_sidebar"]) || run) {
       const header = getHeaderElem();
       const sidebar = getSidebarElem();
+
       // Insert style element for kiosk or hide_header options.
-      if (
-        (locIncludes(["kiosk", "hide_header"]) || hide_header) &&
-        header &&
-        !header.querySelector("#kiosk_mode")
-      ) {
-        const style = document.createElement("style");
-        style.setAttribute("id", "kiosk_mode");
-        style.innerHTML = `
+      if ((locIncludes(["kiosk", "hide_header"]) || hide_header) && styleCheck(header)) {
+        const css = `
           #view {
             min-height: 100vh !important;
           }
@@ -62,21 +83,17 @@ const kiosk_mode = () => {
             display: none;
           }
         `;
-        header.appendChild(style);
-        // Set local storage cache for hiding header
+        addStyles(css, header);
+
+        // Set local storage cache for hiding header.
         if (window.location.href.includes("cache")) {
           window.localStorage.setItem("kmHeader", "true");
         }
       }
+
       // Insert style element for kiosk or hide_sidebar options.
-      if (
-        (locIncludes(["kiosk", "hide_sidebar"]) || hide_sidebar) &&
-        sidebar &&
-        !sidebar.querySelector("#kiosk_mode")
-      ) {
-        const style = document.createElement("style");
-        style.setAttribute("id", "kiosk_mode");
-        style.innerHTML = `
+      if ((locIncludes(["kiosk", "hide_sidebar"]) || hide_sidebar) && styleCheck(sidebar)) {
+        const css = `
           :host {
             --app-drawer-width: 0 !important;
           }
@@ -84,25 +101,24 @@ const kiosk_mode = () => {
             display: none;
           }
         `;
-        sidebar.appendChild(style);
-        // Set local storage cache for hiding sidebar
+        addStyles(css, sidebar);
+
+        // Set local storage cache for hiding sidebar.
         if (window.location.href.includes("cache")) {
           window.localStorage.setItem("kmSidebar", "true");
         }
       }
     }
+
+    // Resize window to apply changes.
     window.dispatchEvent(new Event("resize"));
   }, 200);
 };
 
-new MutationObserver(kiosk_mode).observe(
-  document
-    .querySelector("home-assistant")
-    .shadowRoot.querySelector("home-assistant-main")
-    .shadowRoot.querySelector("partial-panel-resolver"),
-  { childList: true }
-);
+// Watch for changes in "partial-panel-resolver" and run kisok mode.
+new MutationObserver(kiosk_mode).observe(getPanelElem(), { childList: true });
 
+// Initial run.
 kiosk_mode();
 
 console.info(
