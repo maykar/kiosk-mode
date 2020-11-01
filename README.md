@@ -68,7 +68,7 @@ views:
 
 ## Query Strings
 
-The query strings options are:
+The query string options are:
 
 * `?kiosk` to hide both header and sidebar
 * `?hide_header` to hide only the header
