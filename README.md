@@ -48,7 +48,13 @@ views:
 
 ```
 
-Optional query strings are `?hide_header` and `?hide_sidebar`
+## Additional options
+
+Optional query strings are `?hide_header` and `?hide_sidebar`. For example, you can just hide the sidebar to still be able to navigate between views.
+
+### Cache
+
+If you add cache to the end of the URL it will cache your preferences and will persist between views and dashboards. Example: `?hide_header&cache` will make it so that every view and dashboard will hide the header (works for all options). Putting `?clear_cache` in the URL will clear those cached preferences `?disable_kiosk` will temporarily disable any modification. You can also set your cache per device, so you can set `?hide_header&cache` on one device and `?kiosk&cache` on another.
 
 ### Related
 
