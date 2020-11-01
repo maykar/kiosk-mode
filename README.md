@@ -10,10 +10,10 @@ Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assi
 
 *If you previously used [custom-header](https://github.com/maykar/custom-header) you need to uninstall it from [HACS](https://hacs.xyz/)*
 
-Follow only one of two installation methods below:
+Follow only one of two installation methods below, HACS or Manually:
 
 <details>
-  <summary><b>1. Installation and tracking with HACS:</b></summary>
+  <summary><b>Installation and tracking with HACS:</b></summary>
 
 * In the "Frontend" section hit the plus icon in the bottom right
 * Search for `Kiosk Mode` and install it
@@ -31,7 +31,7 @@ resources:
 </details>
 
 <details>
-  <summary><b>2. Manual installation:</b></summary>
+  <summary><b>Manual installation:</b></summary>
 
 * Download [kiosk-mode.js](https://raw.githubusercontent.com/matt8707/kiosk-mode/master/kiosk-mode.js) and place it in your `www` folder
 * Add the resource below
