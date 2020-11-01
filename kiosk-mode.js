@@ -115,8 +115,9 @@ const kiosk_mode = () => {
   }, 200);
 };
 
-// Watch for changes in "partial-panel-resolver" and run kisok mode.
-new MutationObserver(kiosk_mode).observe(getPanelElem(), { childList: true });
+// Run kisok mode on changes to "partial-panel-resolver" children .
+const panel = getPanelElem();
+if (panel) new MutationObserver(kiosk_mode).observe(panel, { childList: true });
 
 // Initial run.
 kiosk_mode();
