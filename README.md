@@ -54,7 +54,12 @@ Optional query strings are `?hide_header` and `?hide_sidebar`. For example, you 
 
 ### Cache
 
-If you add cache to the end of the URL it will cache your preferences and will persist between views and dashboards. Example: `?hide_header&cache` will make it so that every view and dashboard will hide the header (works for all options). Putting `?clear_cache` in the URL will clear those cached preferences `?disable_kiosk` will temporarily disable any modification. You can also set your cache per device, so you can set `?hide_header&cache` on one device and `?kiosk&cache` on another.
+If you add `cache` to the end of the URL it will cache your preferences so that they will persist between views and dashboards.
+
+Example: `?hide_header&cache` will make it so that every view and dashboard will hide the header (works for all options).
+
+Putting `?clear_cache` in the URL will clear those cached preferences and adding `?disable_kiosk` will temporarily disable any modification.<br>
+You can also set your cache per device, so you can set `?hide_header&cache` on one device and `?kiosk&cache` on another.
 
 ### Related
 
@@ -63,4 +68,4 @@ If you add cache to the end of the URL it will cache your preferences and will p
 * [KTibow/fullscreen-card](https://github.com/KTibow/fullscreen-card) - Make your Home Assistant browser fullscreen
 
 ### Credit
-This is a fork of [ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and [corrafig](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) gists
+This is based on [ciotlosm's kiosk mode gist](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and includes features from [corrafig's fork](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) as well as [maykar's Custom Header](https://github.com/maykar/custom-header/).
