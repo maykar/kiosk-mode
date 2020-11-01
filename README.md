@@ -8,9 +8,9 @@ Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assi
 
 ## Installation
 
-*If you previously used [custom-header](https://github.com/maykar/custom-header) you need to uninstall it from [HACS](https://hacs.xyz/)*
+*If you previously used [custom-header](https://github.com/maykar/custom-header) you need to uninstall it from [HACS](https://hacs.xyz/)*<br>
 
-Follow only one of two installation methods below, HACS or Manually:
+**Follow only one of two installation methods below, HACS or Manually:**
 
 <details>
   <summary><b>Installation and tracking with HACS:</b></summary>
