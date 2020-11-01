@@ -60,8 +60,8 @@ Example: `?hide_header&cache` will make every view and dashboard hide the header
 
 **Utility Query Strings**
 
-* `?clear_cache` in the URL will clear all cached preferences
-* `?disable_kiosk` will temporarily disable any modification
+* `?clear_cache` will clear all cached preferences
+* `?disable_kiosk` will temporarily disable any modifications
 
 ### Related
 
