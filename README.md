@@ -13,7 +13,7 @@ Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assi
 **Follow only one of two installation methods below, HACS or Manually:**
 
 <details>
-  <summary><b>Installation and tracking with HACS:</b></summary>
+  <summary><b>Installation and tracking with HACS</b></summary>
 
 * In the "Frontend" section hit the plus icon in the bottom right
 * Search for `Kiosk Mode` and install it
