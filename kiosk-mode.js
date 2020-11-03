@@ -130,7 +130,7 @@ function rootWatch(mutations) {
 }
 
 console.info(
-  `%c  KIOSK-MODE   \n%c Version 1.2.1 `,
+  `%c  KIOSK-MODE   \n%c Version 1.3.0 `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );

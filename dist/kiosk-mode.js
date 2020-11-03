@@ -11,5 +11,5 @@ a="\n          #view {\n            min-height: 100vh !important;\n          }\n
 ,c),o.includes("cache")&&u("kmSidebar","true")))}function n(e){e.forEach(function(e){e.addedNodes.forEach(function(e){
 "ha-panel-lovelace"==e.localName&&new MutationObserver(t).observe(e.shadowRoot,{childList:!0})})})}function t(e){e.forEach(function(e){
 e.addedNodes.forEach(function(e){"hui-root"==e.localName&&o()})})}window.location.href.includes("clear_cache")&&["kmHeader","kmSidebar"].forEach(
-function(e){return u(e,"false")}),o(),new MutationObserver(n).observe(e,{childList:!0}),console.info("%c  KIOSK-MODE   \n%c Version 1.2.1 ",
+function(e){return u(e,"false")}),o(),new MutationObserver(n).observe(e,{childList:!0}),console.info("%c  KIOSK-MODE   \n%c Version 1.3.0 ",
 "color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray");
