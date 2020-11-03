@@ -14,6 +14,7 @@ Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assi
 
 <details>
   <summary><b>Installation and tracking with HACS</b></summary>
+<br>
 
 * In the "Frontend" section of [HACS](https://github.com/hacs/integration) hit the plus icon in the bottom right
 * Search for `Kiosk Mode` and install it
@@ -27,12 +28,13 @@ resources:
   - url: /hacsfiles/kiosk-mode/kiosk-mode.js
     type: module
 ```
-
+<br>
 </details>
 
 <details>
   <summary><b>Manual installation</b></summary>
-
+<br>
+  
 * Download [kiosk-mode.js](https://github.com/matt8707/kiosk-mode/releases/latest) and place it in your `www` folder
 * Add the resource below
 
@@ -45,7 +47,7 @@ resources:
   - url: /local/kiosk-mode.js?v=1.2.1
     type: module
 ```
-
+<br>
 </details>
 
 *If you have trouble installing please [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins)*
