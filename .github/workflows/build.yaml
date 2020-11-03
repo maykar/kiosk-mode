@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Use Node.js 14.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - run: npm install uglify-js @babel/core @babel/cli @babel/preset-env
+    - run: |
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config user.name "GitHub Actions"
+        git pull
+        mkdir -p dist
+        touch dist/kiosk-mode.js
+    - run: npx babel kiosk-mode.js --out-file kiosk-mode.js --presets @babel/preset-env
+    - run: npx uglify-js kiosk-mode.js -b beautify=false,max_line_len=150 --compress --mangle toplevel --output dist/kiosk-mode.js
+    - run: |
+        git add dist/kiosk-mode.js
+        git commit --amend --no-edit || true
+        git push --force || true
