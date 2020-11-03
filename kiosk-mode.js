@@ -3,7 +3,6 @@ const main = document
   .shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const sidebar = main.querySelector("app-drawer-layout");
-let rootCSS;
 
 // Return true if any keyword is found in location.
 function locIncludes(keywords) {
@@ -55,16 +54,17 @@ function kiosk_mode() {
 
   // Only run if location includes one of the keywords.
   if (locIncludes(["kiosk", "hide_header", "hide_sidebar"]) || run) {
-    const header = main
-      .querySelector("ha-panel-lovelace")
-      .shadowRoot.querySelector("hui-root").shadowRoot;
-
+    const lovelace = main.querySelector("ha-panel-lovelace");
+    const header = lovelace
+      ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot
+      : null;
     // Insert style element for kiosk or hide_header options.
     if (
       (locIncludes(["kiosk", "hide_header"]) || hide_header) &&
+      header &&
       styleCheck(header)
     ) {
-      rootCSS = `
+      const css = `
           #view {
             min-height: 100vh !important;
           }
@@ -73,7 +73,7 @@ function kiosk_mode() {
           }
         `;
       setTimeout(function () {
-        addStyles(rootCSS, header);
+        addStyles(css, header);
       }, 100);
 
       // Set localStorage cache for hiding header.
@@ -130,7 +130,7 @@ function rootWatch(mutations) {
 }
 
 console.info(
-  `%c  KIOSK-MODE   \n%c Version 1.3.0 `,
+  `%c  KIOSK-MODE   \n%c Version 1.3.1 `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
