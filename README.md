@@ -35,7 +35,7 @@ resources:
   <summary><b>Manual installation</b></summary>
 <br>
   
-* Download [kiosk-mode.js](https://github.com/matt8707/kiosk-mode/releases/latest) and place it in your `www` folder
+* Download [kiosk-mode.js](https://github.com/matt8707/kiosk-mode/releases/latest) from the latest release and place it in your `www` folder
 * Add the resource below
 
 YAML mode users add it to their [configuration.yaml](https://www.home-assistant.io/lovelace/dashboards-and-views/#adding-more-dashboards-with-yaml) file.
