@@ -2,7 +2,7 @@ const main = document
   .querySelector("home-assistant")
   .shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
-const sidebar = main.querySelector("app-drawer-layout");
+const drawerLayout = main.querySelector("app-drawer-layout");
 
 // Return true if any keyword is found in location.
 function locIncludes(keywords) {
@@ -52,17 +52,19 @@ function kiosk_mode() {
   // Disable styling if "disable_kiosk" in URL.
   if (url.includes("disable_kiosk")) return;
 
+  const lovelace = main.querySelector("ha-panel-lovelace");
+
   // Only run if location includes one of the keywords.
   if (locIncludes(["kiosk", "hide_header", "hide_sidebar"]) || run) {
-    const lovelace = main.querySelector("ha-panel-lovelace");
-    const header = lovelace
+    const huiRoot = lovelace
       ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot
       : null;
+
     // Insert style element for kiosk or hide_header options.
     if (
       (locIncludes(["kiosk", "hide_header"]) || hide_header) &&
-      header &&
-      styleCheck(header)
+      huiRoot &&
+      styleCheck(huiRoot)
     ) {
       const css = `
           #view {
@@ -72,9 +74,7 @@ function kiosk_mode() {
             display: none;
           }
         `;
-      setTimeout(function () {
-        addStyles(css, header);
-      }, 100);
+      addStyles(css, huiRoot);
 
       // Set localStorage cache for hiding header.
       if (url.includes("cache")) setCache("kmHeader", "true");
@@ -83,7 +83,7 @@ function kiosk_mode() {
     // Insert style element for kiosk or hide_sidebar options.
     if (
       (locIncludes(["kiosk", "hide_sidebar"]) || hide_sidebar) &&
-      styleCheck(sidebar)
+      styleCheck(drawerLayout)
     ) {
       const css = `
           :host {
@@ -93,7 +93,7 @@ function kiosk_mode() {
             display: none;
           }
         `;
-      addStyles(css, sidebar);
+      addStyles(css, drawerLayout);
 
       // Set localStorage cache for hiding sidebar.
       if (url.includes("cache")) setCache("kmSidebar", "true");
@@ -120,11 +120,24 @@ function lovelaceWatch(mutations) {
   });
 }
 
-// When hui-root appears run kiosk mode again.
+// When hui-root appears watch for children.
 function rootWatch(mutations) {
   mutations.forEach(({ addedNodes }) => {
     addedNodes.forEach((e) => {
-      if (e.localName == "hui-root") kiosk_mode();
+      if (e.localName == "hui-root") {
+        new MutationObserver(rootShadowWatch).observe(e.shadowRoot, {
+          childList: true,
+        });
+      }
+    });
+  });
+}
+
+// When app-layout appears we can run.
+function rootShadowWatch(mutations) {
+  mutations.forEach(({ addedNodes }) => {
+    addedNodes.forEach((e) => {
+      if (e.localName == "ha-app-layout") kiosk_mode();
     });
   });
 }
