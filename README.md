@@ -80,7 +80,8 @@ The query string options are:
 
 You save settings in a devices cache by using the cache keyword once on the device.<br>This will also make it so the options work on all views and dashboards.
 
-Example: `?hide_header&cache` will make every view and dashboard hide the header, this works for all query strings except for the utility ones below.
+Example: `?hide_header&cache` makes all views & dashboards hide the header.<br>
+This works for all query strings except for the utility strings listed below.
 
 **Utility Query Strings**
 
