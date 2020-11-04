@@ -59,7 +59,7 @@ Add a query string such as `?kiosk` to the end of your URL:
 https://hass:8123/lovelace/default_view?kiosk
 ```
 
-**OR** name a dashboard path `kiosk`
+**OR** name a dashboard path `kiosk` (currently using this option requires a refresh on the view)
 
 ```yaml
 views:
