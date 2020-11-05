@@ -60,7 +60,7 @@ function kiosk_mode() {
   hide_sidebar = queryStringsSet ? hide_sidebar : config.kiosk || config.hide_sidebar;
 
   // Only run if needed.
-  if (queryStringsSet) {
+  if (hide_sidebar || hide_header) {
     const lovelace = main.querySelector("ha-panel-lovelace");
     const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
 
