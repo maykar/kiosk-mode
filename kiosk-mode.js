@@ -44,45 +44,43 @@ if (window.location.href.includes("clear_km_cache")) {
 }
 
 function kiosk_mode() {
-  setTimeout(() => {
-    const url = window.location.href;
+  const url = window.location.href;
 
-    // Disable styling if "disable_km" in URL.
-    if (url.includes("disable_km")) return;
+  // Disable styling if "disable_km" in URL.
+  if (url.includes("disable_km")) return;
 
-    // Retrieve localStorage values & query string options.
-    const hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
-    const hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
+  // Retrieve localStorage values & query string options.
+  const hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
+  const hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
 
-    const config = getConfig();
-    if (config) {
-      const hass = ha.hass;
+  const config = getConfig();
+  if (config) {
+    const hass = ha.hass;
+  }
+
+  // Only run if needed.
+  if (hide_sidebar || hide_header) {
+    const lovelace = main.querySelector("ha-panel-lovelace");
+    const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
+
+    // Insert style element for kiosk or hide_header options.
+    if (hide_header && styleCheck(huiRoot)) {
+      const css = "#view { min-height: 100vh !important } app-header { display: none }";
+      addStyles(css, huiRoot);
+
+      // Set localStorage cache for hiding header.
+      if (url.includes("cache")) setCache("kmHeader", "true");
     }
 
-    // Only run if needed.
-    if (hide_sidebar || hide_header) {
-      const lovelace = main.querySelector("ha-panel-lovelace");
-      const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
+    // Insert style element for kiosk or hide_sidebar options.
+    if (hide_sidebar && styleCheck(drawerLayout)) {
+      const css = ":host { --app-drawer-width: 0 !important } #drawer { display: none }";
+      addStyles(css, drawerLayout);
 
-      // Insert style element for kiosk or hide_header options.
-      if (hide_header && styleCheck(huiRoot)) {
-        const css = "#view { min-height: 100vh !important } app-header { display: none }";
-        addStyles(css, huiRoot);
-
-        // Set localStorage cache for hiding header.
-        if (url.includes("cache")) setCache("kmHeader", "true");
-      }
-
-      // Insert style element for kiosk or hide_sidebar options.
-      if (hide_sidebar && styleCheck(drawerLayout)) {
-        const css = ":host { --app-drawer-width: 0 !important } #drawer { display: none }";
-        addStyles(css, drawerLayout);
-
-        // Set localStorage cache for hiding sidebar.
-        if (url.includes("cache")) setCache("kmSidebar", "true");
-      }
+      // Set localStorage cache for hiding sidebar.
+      if (url.includes("cache")) setCache("kmSidebar", "true");
     }
-  }, 50);
+  }
 }
 
 // Initial run.
@@ -109,10 +107,19 @@ function rootWatch(mutations) {
   mutations.forEach(({ addedNodes }) => {
     addedNodes.forEach((e) => {
       if (e.localName == "hui-root") {
-        setTimeout(() => {
-          kiosk_mode();
-        }, 50);
+        new MutationObserver(appLayoutWatch).observe(e.shadowRoot, {
+          childList: true,
+        });
       }
+    });
+  });
+}
+
+// When ha-app-layout appears we can run.
+function appLayoutWatch(mutations) {
+  mutations.forEach(({ addedNodes }) => {
+    addedNodes.forEach((e) => {
+      if (e.localName == "ha-app-layout") kiosk_mode();
     });
   });
 }
