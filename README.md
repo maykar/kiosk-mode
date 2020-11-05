@@ -59,15 +59,6 @@ Add a query string such as `?kiosk` to the end of your URL:
 https://hass:8123/lovelace/default_view?kiosk
 ```
 
-**OR** name a dashboard path `kiosk` (currently using this option requires a refresh on the view)
-
-```yaml
-views:
-  - title: Tablet
-    path: kiosk
-
-```
-
 ## Query Strings
 
 The query string options are:
@@ -85,8 +76,28 @@ This works for all query strings except for the utility strings listed below.
 
 **Utility Query Strings**
 
-* `?clear_cache` will clear all cached preferences
-* `?disable_kiosk` will temporarily disable any modifications
+* `?clear_km_cache` will clear all cached preferences
+* `?disable_km` will temporarily disable any modifications
+
+## Configuration in Lovelace
+
+You can also set up kiosk-mode in your Lovelace config.
+
+* Query strings & cached options are always used first & if any are set on a device, the Lovelace config will be ignored.
+* Config is placed in the root of your Lovelace config & is per dashboard.
+* If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
+* kisok-mode has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
+* `kiosk` sets both `hide_header` and `hide_sidebar` to true, so no need to set either of those if you set `kiosk: true`.
+
+**Example**<br>
+*Note: `views:` is added in the example below to show what it means for the config to be in the root of your Lovelace configuration.*
+
+```
+kiosk_mode:
+  hide_header: true
+  
+views:
+```
 
 ### Related
 
@@ -95,4 +106,6 @@ This works for all query strings except for the utility strings listed below.
 * [KTibow/fullscreen-card](https://github.com/KTibow/fullscreen-card) - Make your Home Assistant browser fullscreen
 
 ### Credit
-This is based on [ciotlosm's kiosk mode gist](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and includes features from [corrafig's fork](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) as well as [maykar's Custom Header](https://github.com/maykar/custom-header/).
+This was originally based on and inspired by [ciotlosm's kiosk mode gist](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and [corrafig's fork](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) of the same gist.
+
+Big thank you to [matt8707](https://github.com/matt8707) for starting this project and allowing me to rewrite it and take over ownership.
