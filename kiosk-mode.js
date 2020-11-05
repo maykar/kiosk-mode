@@ -1,11 +1,10 @@
-const ha = document.querySelector("home-assistant");
-const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
+const main = document.querySelector("home-assistant").shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 
 function getConfig() {
   const ll = main.querySelector("ha-panel-lovelace");
-  return ll && ll.lovelace.config.kiosk_mode ? ll.lovelace.config.kiosk_mode : null;
+  return ll && ll.lovelace.config.kiosk_mode ? ll.lovelace.config.kiosk_mode : {};
 }
 
 // Return true if any keyword is found in location.
@@ -50,16 +49,18 @@ function kiosk_mode() {
   if (url.includes("disable_km")) return;
 
   // Retrieve localStorage values & query string options.
-  const hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
-  const hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
+  let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
+  let hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
 
   const config = getConfig();
-  if (config) {
-    const hass = ha.hass;
-  }
+  const queryStringsSet = hide_sidebar || hide_header;
+
+  // Use config values only if config strings and cache aren't used.
+  hide_header = queryStringsSet ? hide_header : config.kiosk || config.hide_header;
+  hide_sidebar = queryStringsSet ? hide_sidebar : config.kiosk || config.hide_sidebar;
 
   // Only run if needed.
-  if (hide_sidebar || hide_header) {
+  if (queryStringsSet) {
     const lovelace = main.querySelector("ha-panel-lovelace");
     const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
 
