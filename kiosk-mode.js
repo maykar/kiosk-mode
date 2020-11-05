@@ -126,7 +126,7 @@ function appLayoutWatch(mutations) {
 }
 
 console.info(
-  `%c  KIOSK-MODE   \n%c Version 1.3.1 `,
+  `%c  KIOSK-MODE   \n%c Version 1.3.4 `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
