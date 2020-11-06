@@ -126,12 +126,12 @@ function appLayoutWatch(mutations) {
 }
 
 // Overly complicated console tag.
-const conInfo = { header: "%c≡ KIOSK-MODE".padEnd(23), ver: "%cVersion: *DEV " };
+const conInfo = { header: "%c≡ kiosk-mode".padEnd(23), ver: "%cversion *DEV " };
 const br = "%c\n";
 const maxLen = Math.max(...Object.values(conInfo).map((el) => el.length));
 for (const [key] of Object.entries(conInfo)) {
   if (conInfo[key].length <= maxLen) conInfo[key] = conInfo[key].padEnd(maxLen);
-  if (key == "header") conInfo[key] = `${conInfo[key]}⋮`;
+  if (key == "header") conInfo[key] = `${conInfo[key].slice(0, -1)}⋮ `;
 }
 const header =
   "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
