@@ -84,13 +84,12 @@ This works for all query strings except for the utility strings listed below.
 You can also set up kiosk-mode in your Lovelace config.
 
 * Query strings & cached options are used first & if any are set on a device, the config will be ignored.
-* Config is placed in the root of your Lovelace config & is per dashboard.
+* Config is placed in the root of your Lovelace config (`kiosk_mode:` should not be indented) & is per dashboard.
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
 * kisok-mode has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
 * `kiosk` sets `hide_header` and `hide_sidebar` to true, no need to set either if you set `kiosk: true`.
 
-**Example**<br>
-*Note: `views:` is added in the example below to show what it means for the config to be in the root of your Lovelace configuration.*
+**Example:**
 
 ```
 kiosk_mode:
@@ -98,6 +97,7 @@ kiosk_mode:
   
 views:
 ```
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
 
 ### Related
 
@@ -110,4 +110,4 @@ This was originally based on and inspired by [ciotlosm's kiosk mode gist](https:
 
 Big thank you to [matt8707](https://github.com/matt8707) for starting this project and allowing me to rewrite it and transfering ownership.
 
-Many thanks to [KTibow](https://github.com/KTibow) as well for the github release action and support.
+Many thanks to [KTibow](https://github.com/KTibow) as well, for the github release action and support.
