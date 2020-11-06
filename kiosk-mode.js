@@ -131,7 +131,7 @@ function appLayoutWatch(mutations) {
 }
 
 // Overly complicated console tag.
-const conInfo = { header: "%c≡ kiosk-mode".padEnd(23), ver: "%cversion *DEV " };
+const conInfo = { header: "%c≡ kiosk-mode".padEnd(25), ver: "%cversion *DEV " };
 const br = "%c\n";
 const maxLen = Math.max(...Object.values(conInfo).map((el) => el.length));
 for (const [key] of Object.entries(conInfo)) {
