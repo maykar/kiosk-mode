@@ -13,9 +13,12 @@ jobs:
       run: |
         sed -i 's|*DEV|${{ github.ref }}|g' kiosk-mode.js
         sed -i 's|refs/tags/||' kiosk-mode.js
-    - run: npm install uglify-js @babel/core @babel/cli @babel/preset-env
-    - run: npx babel kiosk-mode.js --out-file kiosk-mode.js --presets @babel/preset-env
-    - run: npx uglify-js kiosk-mode.js -b beautify=false,max_line_len=150 --compress --mangle toplevel --output kiosk-mode.js
+    - name: Install deps
+      run: npm install uglify-js @babel/core @babel/cli @babel/preset-env
+    - name: Run Babel
+      run: npx babel kiosk-mode.js --out-file kiosk-mode.js --presets @babel/preset-env
+    - name: Run Uglify
+      run: npx uglify-js kiosk-mode.js -b beautify=false,max_line_len=150 --compress --mangle toplevel --output kiosk-mode.js
     - name: Upload release asset
       uses: actions/upload-release-asset@v1
       env:
