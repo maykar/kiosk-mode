@@ -92,48 +92,53 @@ new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
 function lovelaceWatch(mutations) {
-  mutations.forEach(({ addedNodes }) => {
-    addedNodes.forEach((e) => {
-      if (e.localName == "ha-panel-lovelace") {
-        new MutationObserver(rootWatch).observe(e.shadowRoot, {
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "ha-panel-lovelace") {
+        new MutationObserver(rootWatch).observe(node.shadowRoot, {
           childList: true,
         });
+        return;
       }
-    });
-  });
+    }
+  }
 }
 
 // When hui-root appears watch it's children.
 function rootWatch(mutations) {
-  mutations.forEach(({ addedNodes }) => {
-    addedNodes.forEach((e) => {
-      if (e.localName == "hui-root") {
-        new MutationObserver(appLayoutWatch).observe(e.shadowRoot, {
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "hui-root") {
+        new MutationObserver(appLayoutWatch).observe(node.shadowRoot, {
           childList: true,
         });
+        return;
       }
-    });
-  });
+    }
+  }
 }
 
 // When ha-app-layout appears we can run.
 function appLayoutWatch(mutations) {
-  mutations.forEach(({ addedNodes }) => {
-    addedNodes.forEach((e) => {
-      if (e.localName == "ha-app-layout") kiosk_mode();
-    });
-  });
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "ha-app-layout") {
+        kiosk_mode();
+        return;
+      }
+    }
+  }
 }
 
 // Overly complicated console tag.
-const conInfo = { header: "%c☰ KIOSK-MODE".padEnd(23), ver: "%cVersion: *DEV  " };
+const conInfo = { header: "%c≡ kiosk-mode".padEnd(23), ver: "%cversion *DEV " };
 const br = "%c\n";
 const maxLen = Math.max(...Object.values(conInfo).map((el) => el.length));
 for (const [key] of Object.entries(conInfo)) {
   if (conInfo[key].length <= maxLen) conInfo[key] = conInfo[key].padEnd(maxLen);
-  if (key == "header") conInfo[key] = `${conInfo[key].slice(0, -2)}⋮ `;
+  if (key == "header") conInfo[key] = `${conInfo[key].slice(0, -1)}⋮ `;
 }
 const header =
   "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
-const info = "border-width:0px 1px 1px 1px;padding:6px;background:white;color:#424242;line-height:0.7;";
+const info = "border-width:0px 1px 1px 1px;padding:7px;background:white;color:#424242;line-height:0.7;";
 console.info(conInfo.header + br + conInfo.ver, header, "", `${header} ${info}`);
