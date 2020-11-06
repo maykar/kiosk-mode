@@ -108,6 +108,6 @@ views:
 ### Credit
 This was originally based on and inspired by [ciotlosm's kiosk mode gist](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and [corrafig's fork](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) of the same gist.
 
-Big thank you to [matt8707](https://github.com/matt8707) for starting this project and allowing me to rewrite it and transfering ownership.
+Big thank you to [matt8707](https://github.com/matt8707) for starting this project, allowing me to rewrite it, and transfering ownership.
 
 Many thanks to [KTibow](https://github.com/KTibow) as well, for the github release action and support.
