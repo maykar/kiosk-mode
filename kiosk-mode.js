@@ -92,37 +92,42 @@ new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
 function lovelaceWatch(mutations) {
-  mutations.forEach(({ addedNodes }) => {
-    addedNodes.forEach((e) => {
-      if (e.localName == "ha-panel-lovelace") {
-        new MutationObserver(rootWatch).observe(e.shadowRoot, {
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "ha-panel-lovelace") {
+        new MutationObserver(rootWatch).observe(node.shadowRoot, {
           childList: true,
         });
+        return;
       }
-    });
-  });
+    }
+  }
 }
 
 // When hui-root appears watch it's children.
 function rootWatch(mutations) {
-  mutations.forEach(({ addedNodes }) => {
-    addedNodes.forEach((e) => {
-      if (e.localName == "hui-root") {
-        new MutationObserver(appLayoutWatch).observe(e.shadowRoot, {
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "hui-root") {
+        new MutationObserver(appLayoutWatch).observe(node.shadowRoot, {
           childList: true,
         });
+        return;
       }
-    });
-  });
+    }
+  }
 }
 
 // When ha-app-layout appears we can run.
 function appLayoutWatch(mutations) {
-  mutations.forEach(({ addedNodes }) => {
-    addedNodes.forEach((e) => {
-      if (e.localName == "ha-app-layout") kiosk_mode();
-    });
-  });
+  for (let mutation of mutations) {
+    for (let node of mutation.addedNodes) {
+      if (node.localName == "ha-app-layout") {
+        kiosk_mode();
+        return;
+      }
+    }
+  }
 }
 
 // Overly complicated console tag.
