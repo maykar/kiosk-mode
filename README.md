@@ -1,6 +1,6 @@
 # kiosk-mode
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs) [![coffee_badge](https://img.shields.io/badge/Buy-Me%20a%20Coffee-critical](https://www.buymeacoffee.com/FgwNR2l)
 
 Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assistant.io/)
 
