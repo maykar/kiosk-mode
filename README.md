@@ -6,7 +6,7 @@ Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assi
 
 ![image](example1.png)
 
-## Installation
+# Installation
 
 *If you previously used [custom-header](https://github.com/maykar/custom-header) you need to uninstall it from [HACS](https://hacs.xyz/)*<br>
 
@@ -52,7 +52,7 @@ resources:
 
 *If you have trouble installing please [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins)*
 
-## Usage
+# Usage
 Add a query string such as `?kiosk` to the end of your URL:
 
 ```
@@ -79,7 +79,7 @@ This works for all query strings except for the utility strings listed below.
 * `?clear_km_cache` will clear all cached preferences
 * `?disable_km` will temporarily disable any modifications
 
-## Configuration in Lovelace
+# Configuration in Lovelace
 
 * Config is placed in the root of your Lovelace config (`kiosk_mode:` should not be indented) & is per dashboard.
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
@@ -87,10 +87,10 @@ This works for all query strings except for the utility strings listed below.
 There are 2 methods to setup config in Lovelace: Global and Conditional.
 
 The order in which the 3 config methods are used is this:
-* Conditional Lovelace config overrides Query Strings & Cache.
+* Conditional Lovelace config overrides Query Strings, Cached config, & Global config.
 * Query Strings & Cached configs override Global Lovelace config.
 
-### Global Lovelace Config
+## Global Lovelace Config
 
 * kisok-mode has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
 * `kiosk` sets `hide_header` and `hide_sidebar` to true, no need to set either if you set `kiosk: true`.
@@ -110,7 +110,7 @@ views:
 <br>
 </details>
 
-### Conditional Lovelace Config
+## Conditional Lovelace Config
 
 This option uses the same options as global, but uses 3 conditions in order to use the options.
 
