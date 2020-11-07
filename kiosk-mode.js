@@ -65,7 +65,7 @@ function kiosk_mode() {
   if (hide_sidebar || hide_header) {
     const lovelace = main.querySelector("ha-panel-lovelace");
     const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
-    const toolbar = huiRoot.querySelector("app-toolbar")
+    const toolbar = huiRoot ? huiRoot.querySelector("app-toolbar") : null;
 
     // Insert style element for kiosk or hide_header options.
     if (hide_header && styleCheck(huiRoot)) {
