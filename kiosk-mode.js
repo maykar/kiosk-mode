@@ -65,13 +65,13 @@ function kiosk_mode() {
   hide_sidebar = queryStringsSet ? hide_sidebar : config.kiosk || config.hide_sidebar;
 
   if (adminConf && hass.user.is_admin) {
-    hide_header = adminConf.kiosk_mode || adminConf.hide_header;
-    hide_sidebar = adminConf.kiosk_mode || adminConf.hide_sidebar;
+    hide_header = adminConf.kiosk || adminConf.hide_header;
+    hide_sidebar = adminConf.kiosk || adminConf.hide_sidebar;
   }
 
   if (nonAdminConf && !hass.user.is_admin) {
-    hide_header = nonAdminConf.kiosk_mode || nonAdminConf.hide_header;
-    hide_sidebar = nonAdminConf.kiosk_mode || nonAdminConf.hide_sidebar;
+    hide_header = nonAdminConf.kiosk || nonAdminConf.hide_header;
+    hide_sidebar = nonAdminConf.kiosk || nonAdminConf.hide_sidebar;
   }
 
   if (userConf) {
@@ -80,8 +80,9 @@ function kiosk_mode() {
       let users = conf.users;
       if (!Array.isArray(conf.users)) users = [users];
       if (users.map((u) => u.toLowerCase().includes(hass.user.name.toLowerCase()))) {
-        hide_header = conf.kiosk_mode || conf.hide_header;
-        hide_sidebar = conf.kiosk_mode || conf.hide_sidebar;
+        console.log(conf.kiosk || conf.hide_header)
+        hide_header = conf.kiosk || conf.hide_header;
+        hide_sidebar = conf.kiosk || conf.hide_sidebar;
       }
     }
   }
