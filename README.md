@@ -6,7 +6,7 @@ Hides the header and/or sidebar drawer in [Home Assistant](https://www.home-assi
 
 ![image](example1.png)
 
-## Installation
+# Installation
 
 *If you previously used [custom-header](https://github.com/maykar/custom-header) you need to uninstall it from [HACS](https://hacs.xyz/)*<br>
 
@@ -52,7 +52,7 @@ resources:
 
 *If you have trouble installing please [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins)*
 
-## Usage
+# Usage
 Add a query string such as `?kiosk` to the end of your URL:
 
 ```
@@ -79,17 +79,25 @@ This works for all query strings except for the utility strings listed below.
 * `?clear_km_cache` will clear all cached preferences
 * `?disable_km` will temporarily disable any modifications
 
-## Configuration in Lovelace
+# Configuration in Lovelace
 
-You can also set up kiosk-mode in your Lovelace config.
-
-* Query strings & cached options are used first & if any are set on a device, the config will be ignored.
 * Config is placed in the root of your Lovelace config (`kiosk_mode:` should not be indented) & is per dashboard.
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
+
+There are 2 methods to setup config in Lovelace: Global and Conditional.
+
+The order in which the 3 config methods are used is this:
+* Conditional Lovelace config overrides Query Strings, Cached config, & Global config.
+* Query Strings & Cached configs override Global Lovelace config.
+
+## Global Lovelace Config
+
 * kisok-mode has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
 * `kiosk` sets `hide_header` and `hide_sidebar` to true, no need to set either if you set `kiosk: true`.
 
-**Example:**
+<details>
+  <summary><b>Global Config Example</b></summary>
+<br>
 
 ```
 kiosk_mode:
@@ -98,6 +106,85 @@ kiosk_mode:
 views:
 ```
 *Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
+
+## Conditional Lovelace Config
+
+This option uses the same options as global, but uses 3 conditions in order to use the options.
+
+<hr>
+
+**Admin Condition:**
+Sets the settings for every admin user.
+
+<details>
+  <summary><b>Admin Config Example</b></summary>
+<br>
+
+```
+kiosk_mode:
+  admin_settings:
+    hide_header: true
+  
+views:
+```
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
+
+<hr>
+
+**Non-Admin Condition:**
+Sets the settings for every regular user.
+
+<details>
+  <summary><b>Non-Admin Config Example</b></summary>
+<br>
+
+```
+kiosk_mode:
+  non_admin_settings:
+    hide_header: true
+  
+views:
+```
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
+
+<hr>
+
+**User Condition:**
+Sets the settings for specific users. **This uses a user's name, not their username (if they're different)**.
+
+<details>
+  <summary><b>User Config Condition</b></summary>
+<br>
+
+```
+kiosk_mode:
+  user_settings:
+    - users:
+        - "ryan meek"
+        - "maykar"
+      hide_sidebar: true
+    - users:
+        - "the wife"
+        - "another user"
+      kiosk: true
+  
+views:
+```
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
+
+<hr>
 
 ### Related
 
