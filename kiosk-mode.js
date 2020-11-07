@@ -80,7 +80,6 @@ function kiosk_mode() {
       let users = conf.users;
       if (!Array.isArray(conf.users)) users = [users];
       if (users.map((u) => u.toLowerCase().includes(hass.user.name.toLowerCase()))) {
-        console.log(conf.kiosk || conf.hide_header)
         hide_header = conf.kiosk || conf.hide_header;
         hide_sidebar = conf.kiosk || conf.hide_sidebar;
       }
