@@ -1,4 +1,5 @@
-const main = document.querySelector("home-assistant").shadowRoot.querySelector("home-assistant-main").shadowRoot;
+const ha = document.querySelector("home-assistant");
+const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 
@@ -44,6 +45,7 @@ if (window.location.href.includes("clear_km_cache")) {
 
 function kiosk_mode() {
   const url = window.location.href;
+  const hass = ha.hass;
 
   // Disable styling if "disable_km" in URL.
   if (url.includes("disable_km")) return;
@@ -63,6 +65,7 @@ function kiosk_mode() {
   if (hide_sidebar || hide_header) {
     const lovelace = main.querySelector("ha-panel-lovelace");
     const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
+    const toolbar = huiRoot.querySelector("app-toolbar")
 
     // Insert style element for kiosk or hide_header options.
     if (hide_header && styleCheck(huiRoot)) {
@@ -77,6 +80,9 @@ function kiosk_mode() {
     if (hide_sidebar && styleCheck(drawerLayout)) {
       const css = ":host { --app-drawer-width: 0 !important } #drawer { display: none }";
       addStyles(css, drawerLayout);
+      
+      // Hide menu button.
+      if (styleCheck(toolbar)) addStyles("ha-menu-button { display:none !important } ", toolbar)
 
       // Set localStorage cache for hiding sidebar.
       if (url.includes("cache")) setCache("kmSidebar", "true");
@@ -131,7 +137,7 @@ function appLayoutWatch(mutations) {
 }
 
 // Overly complicated console tag.
-const conInfo = { header: "%c≡ kiosk-mode".padEnd(25), ver: "%cversion *DEV " };
+const conInfo = { header: "%c≡ kiosk-mode".padEnd(27), ver: "%cversion *DEV " };
 const br = "%c\n";
 const maxLen = Math.max(...Object.values(conInfo).map((el) => el.length));
 for (const [key] of Object.entries(conInfo)) {
