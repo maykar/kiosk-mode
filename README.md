@@ -114,6 +114,8 @@ views:
 
 This option uses the same options as global, but uses 3 conditions in order to use the options.
 
+<hr>
+
 **Admin Condition:**
 Sets the settings for every admin user.
 
@@ -133,6 +135,8 @@ views:
 <br>
 </details>
 
+<hr>
+
 **Non-Admin Condition:**
 Sets the settings for every regular user.
 
@@ -151,6 +155,8 @@ views:
 
 <br>
 </details>
+
+<hr>
 
 **User Condition:**
 Sets the settings for specific users. **This uses a user's name, not their username (if they're different)**.
@@ -177,6 +183,8 @@ views:
 
 <br>
 </details>
+
+<hr>
 
 ### Related
 
