@@ -81,15 +81,23 @@ This works for all query strings except for the utility strings listed below.
 
 ## Configuration in Lovelace
 
-You can also set up kiosk-mode in your Lovelace config.
-
-* Query strings & cached options are used first & if any are set on a device, the config will be ignored.
 * Config is placed in the root of your Lovelace config (`kiosk_mode:` should not be indented) & is per dashboard.
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
+
+There are 2 methods to setup config in Lovelace: Global and Conditional.
+
+The order in which the 3 config methods are used is this:
+* Conditional Lovelace config overrides Query Strings & Cache.
+* Query Strings & Cached configs override Global Lovelace config.
+
+### Global Lovelace Config
+
 * kisok-mode has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
 * `kiosk` sets `hide_header` and `hide_sidebar` to true, no need to set either if you set `kiosk: true`.
 
-**Example:**
+<details>
+  <summary><b>Global Config Example</b></summary>
+<br>
 
 ```
 kiosk_mode:
@@ -98,6 +106,77 @@ kiosk_mode:
 views:
 ```
 *Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
+
+### Conditional Lovelace Config
+
+This option uses the same options as global, but uses 3 conditions in order to use the options.
+
+**Admin Condition**
+Sets the settings for every admin user. Example:
+
+<details>
+  <summary><b>Admin Config Example</b></summary>
+<br>
+
+```
+kiosk_mode:
+  admin_settings:
+    hide_header: true
+  
+views:
+```
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
+
+**Non-Admin Condition**
+Sets the settings for every regular user. Example:
+
+<details>
+  <summary><b>Non-Admin Config Example</b></summary>
+<br>
+
+```
+kiosk_mode:
+  non_admin_settings:
+    hide_header: true
+  
+views:
+```
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
+
+**User Condition**
+Sets the settings for specific users. **This uses a user's name, not their username**. Example:
+
+<details>
+  <summary><b>User Config Condition</b></summary>
+<br>
+
+```
+kiosk_mode:
+  user_settings:
+    - users:
+        - "ryan meek"
+        - "maykar"
+      hide_sidebar: true
+    - users:
+        - "the wife"
+        - "another user"
+      kiosk: true
+  
+views:
+```
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+
+<br>
+</details>
 
 ### Related
 
