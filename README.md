@@ -112,9 +112,7 @@ views:
 
 ## Conditional Lovelace Config
 
-This option uses the same options as global, but uses 3 conditions in order to use the options.
-
-<hr>
+This uses the same options as global, but is dependent on one of 3 user conditions.
 
 **Admin Condition:**
 Sets the settings for every admin user.
