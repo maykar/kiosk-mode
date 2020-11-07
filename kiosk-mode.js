@@ -55,11 +55,36 @@ function kiosk_mode() {
   let hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
 
   const config = getConfig();
+  const adminConf = config.admin_settings;
+  const nonAdminConf = config.non_admin_settings;
+  let userConf = config.user_settings;
   const queryStringsSet = hide_sidebar || hide_header;
 
   // Use config values only if config strings and cache aren't used.
   hide_header = queryStringsSet ? hide_header : config.kiosk || config.hide_header;
   hide_sidebar = queryStringsSet ? hide_sidebar : config.kiosk || config.hide_sidebar;
+
+  if (adminConf && hass.user.is_admin) {
+    hide_header = adminConf.kiosk_mode || adminConf.hide_header;
+    hide_sidebar = adminConf.kiosk_mode || adminConf.hide_sidebar;
+  }
+
+  if (nonAdminConf && !hass.user.is_admin) {
+    hide_header = nonAdminConf.kiosk_mode || nonAdminConf.hide_header;
+    hide_sidebar = nonAdminConf.kiosk_mode || nonAdminConf.hide_sidebar;
+  }
+
+  if (userConf) {
+    if (!Array.isArray(userConf)) userConf = [userConf];
+    for (let conf of userConf) {
+      let users = conf.users;
+      if (!Array.isArray(conf.users)) users = [users];
+      if (users.map((u) => u.toLowerCase().includes(hass.user.name.toLowerCase()))) {
+        hide_header = conf.kiosk_mode || conf.hide_header;
+        hide_sidebar = conf.kiosk_mode || conf.hide_sidebar;
+      }
+    }
+  }
 
   // Only run if needed.
   if (hide_sidebar || hide_header) {
@@ -80,9 +105,9 @@ function kiosk_mode() {
     if (hide_sidebar && styleCheck(drawerLayout)) {
       const css = ":host { --app-drawer-width: 0 !important } #drawer { display: none }";
       addStyles(css, drawerLayout);
-      
+
       // Hide menu button.
-      if (styleCheck(toolbar)) addStyles("ha-menu-button { display:none !important } ", toolbar)
+      if (styleCheck(toolbar)) addStyles("ha-menu-button { display:none !important } ", toolbar);
 
       // Set localStorage cache for hiding sidebar.
       if (url.includes("cache")) setCache("kmSidebar", "true");
