@@ -79,7 +79,7 @@ function kiosk_mode() {
     for (let conf of userConf) {
       let users = conf.users;
       if (!Array.isArray(conf.users)) users = [users];
-      if (users.some(x => x.toLowerCase() == hass.user.name.toLowerCase())) {
+      if (users.some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
         hide_header = conf.kiosk || conf.hide_header;
         hide_sidebar = conf.kiosk || conf.hide_sidebar;
       }
