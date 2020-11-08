@@ -52,52 +52,16 @@ resources:
 
 *If you have trouble installing please [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins)*
 
-# Usage
-Add a query string such as `?kiosk` to the end of your URL:
+# Configuration
 
-```
-https://hass:8123/lovelace/default_view?kiosk
-```
-
-## Query Strings
-
-The query string options are:
-
-* `?kiosk` to hide both header and sidebar
-* `?hide_header` to hide only the header
-* `?hide_sidebar` to hide only the sidebar
-
-## Cache
-
-You save settings in a devices cache by using the cache keyword once on the device.<br>This will also make it so the options work on all views and dashboards.
-
-Example: `?hide_header&cache` makes all views & dashboards hide the header.<br>
-This works for all query strings except for the utility strings listed below.
-
-**Utility Query Strings**
-
-* `?clear_km_cache` will clear all cached preferences
-* `?disable_km` will temporarily disable any modifications
-
-# Configuration in Lovelace
-
-* Config is placed in the root of your Lovelace config (`kiosk_mode:` should not be indented) & is per dashboard.
+* Config is placed in the root of your Lovelace config: `kiosk_mode:` should not be indented & is per dashboard.
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
 
-There are 2 methods to setup config in Lovelace: Global and Conditional.
+## Simple Lovelace Config
+The following config method will be ignored if any query strings/cache are used or a conditional config has a match.
 
-The order in which the 3 config methods are used is this:
-* Conditional Lovelace config overrides Query Strings, Cached config, & Global config.
-* Query Strings & Cached configs override Global Lovelace config.
-
-## Global Lovelace Config
-
-* kisok-mode has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
-* `kiosk` sets `hide_header` and `hide_sidebar` to true, no need to set either if you set `kiosk: true`.
-
-<details>
-  <summary><b>Global Config Example</b></summary>
-<br>
+* `kisok_mode:` has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
+* `kiosk: true` sets `hide_header` and `hide_sidebar` to true, no need to set either when it's used.
 
 ```
 kiosk_mode:
@@ -107,61 +71,31 @@ views:
 ```
 *Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
 
-<br>
-</details>
-
 ## Conditional Lovelace Config
+Contitional config takes priority and if a condition matches, all other config options/methods are ignored.
 
-This uses the same options as global, but is dependent on one of 3 user conditions.
+These use the same options as above, but placed under one of the following user conditions:
 
-**Admin Condition:**
+**admin_settings:**
 Sets the settings for every admin user.
-
-<details>
-  <summary><b>Admin Config Example</b></summary>
-<br>
 
 ```
 kiosk_mode:
   admin_settings:
     hide_header: true
-  
-views:
 ```
-*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
 
-<br>
-</details>
-
-<hr>
-
-**Non-Admin Condition:**
+**non_admin_settings:**
 Sets the settings for every regular user.
-
-<details>
-  <summary><b>Non-Admin Config Example</b></summary>
-<br>
 
 ```
 kiosk_mode:
   non_admin_settings:
     hide_header: true
-  
-views:
 ```
-*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
 
-<br>
-</details>
-
-<hr>
-
-**User Condition:**
+**user_settings:**
 Sets the settings for specific users. **This uses a user's name, not their username (if they're different)**.
-
-<details>
-  <summary><b>User Config Condition</b></summary>
-<br>
 
 ```
 kiosk_mode:
@@ -172,17 +106,34 @@ kiosk_mode:
       hide_sidebar: true
     - users:
         - "the wife"
-        - "another user"
       kiosk: true
-  
-views:
 ```
-*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
 
+## Query Strings
+Add a query string such as `?kiosk` to the end of your URL:
+
+```
+https://hass:8123/lovelace/default_view?kiosk
+```
+
+The query string options are:
+
+* `?kiosk` to hide both header and sidebar
+* `?hide_header` to hide only the header
+* `?hide_sidebar` to hide only the sidebar
+
+## Query String Caching
+
+You save settings in a devices cache by using the cache keyword once on the device.<br>This will also make it so the options work on all views and dashboards.
+
+Example: `?hide_header&cache` makes all views & dashboards hide the header.<br>
+This works for all query strings except for the utility strings listed below.
+
+**Utility Query Strings**
+
+* `?clear_km_cache` will clear all cached preferences
+* `?disable_km` will temporarily disable any modifications
 <br>
-</details>
-
-<hr>
 
 ### Related
 
