@@ -77,7 +77,7 @@ Contitional config takes priority and if a condition matches, all other config o
 These use the same options as above, but placed under one of the following user conditions:
 
 **admin_settings:**
-Sets the settings for every admin user.
+Sets the config for every admin user.
 
 ```
 kiosk_mode:
@@ -86,7 +86,7 @@ kiosk_mode:
 ```
 
 **non_admin_settings:**
-Sets the settings for every regular user.
+Sets the config for every regular user.
 
 ```
 kiosk_mode:
@@ -95,7 +95,7 @@ kiosk_mode:
 ```
 
 **user_settings:**
-Sets the settings for specific users. **This uses a user's name, not their username (if they're different)**.
+Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.
 
 ```
 kiosk_mode:
