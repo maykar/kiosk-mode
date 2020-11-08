@@ -10,7 +10,7 @@ function getConfig() {
 
 // Return true if any keyword is found in location.
 function locIncludes(keywords) {
-  const url = window.location.href;
+  const url = window.location.search;
   return keywords.some((x) => url.includes(x));
 }
 
@@ -39,12 +39,12 @@ function cacheAsBool(k) {
 }
 
 // Clear cache if requested.
-if (window.location.href.includes("clear_km_cache")) {
+if (window.location.search.includes("clear_km_cache")) {
   ["kmHeader", "kmSidebar"].forEach((k) => setCache(k, "false"));
 }
 
 function kiosk_mode() {
-  const url = window.location.href;
+  const url = window.location.search;
   const hass = ha.hass;
 
   // Disable styling if "disable_km" in URL.
@@ -79,7 +79,7 @@ function kiosk_mode() {
     for (let conf of userConf) {
       let users = conf.users;
       if (!Array.isArray(conf.users)) users = [users];
-      if (users.map((u) => u.toLowerCase().includes(hass.user.name.toLowerCase()))) {
+      if (users.map((u) => u.toLowerCase().includes(hass.user.name.toLowerCase()))[0]) {
         hide_header = conf.kiosk || conf.hide_header;
         hide_sidebar = conf.kiosk || conf.hide_sidebar;
       }
