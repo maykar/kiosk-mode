@@ -58,7 +58,7 @@ resources:
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
 
 ## Simple Lovelace Config
-The following config method will be ignored if any query strings/cache are used or a conditional config has a match.
+The following config method will be ignored if any [query strings/cache](#query-strings) are used or a [conditional config](#conditional-lovelace-config) has a match.
 
 * `kisok_mode:` has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
 * `kiosk: true` sets `hide_header` and `hide_sidebar` to true, no need to set either when it's used.
@@ -69,7 +69,7 @@ kiosk_mode:
   
 views:
 ```
-*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*
+*Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*<br><br>
 
 ## Conditional Lovelace Config
 Contitional config takes priority and if a condition matches, all other config options/methods are ignored.
@@ -108,6 +108,7 @@ kiosk_mode:
         - "the wife"
       kiosk: true
 ```
+<br>
 
 ## Query Strings
 Add a query string such as `?kiosk` to the end of your URL:
@@ -140,6 +141,7 @@ This works for all query strings except for the utility strings listed below.
 * [Fully Kiosk Browser](https://www.fully-kiosk.com/) - Great for wall mounted tablets
 * [Applicationize](https://applicationize.me/) - Convert web apps into desktop apps
 * [KTibow/fullscreen-card](https://github.com/KTibow/fullscreen-card) - Make your Home Assistant browser fullscreen
+<br>
 
 ### Credit
 This was originally based on and inspired by [ciotlosm's kiosk mode gist](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931) and [corrafig's fork](https://gist.github.com/corrafig/c8288df960e7f59e82c12d14de26fde8) of the same gist.
