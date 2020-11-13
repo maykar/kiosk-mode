@@ -60,7 +60,7 @@ resources:
 ## Simple Lovelace Config
 The following config method will be ignored if any [query strings/cache](#query-strings) are used or a [conditional config](#conditional-lovelace-config) has a match.
 
-* `kisok_mode:` has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
+* `kiosk_mode:` has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
 * `kiosk: true` sets `hide_header` and `hide_sidebar` to true, no need to set either when it's used.
 
 ```
