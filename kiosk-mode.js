@@ -2,9 +2,14 @@ const ha = document.querySelector("home-assistant");
 const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
+let llAttempts = 0;
 
 function getConfig() {
   const ll = main.querySelector("ha-panel-lovelace");
+  if (ll && (!ll.lovelace || !ll.lovelace.config) && llAttempts < 10) {
+    llAttempts++
+    setTimeout(() => getConfig(), 50)
+  }
   return ll && ll.lovelace.config.kiosk_mode ? ll.lovelace.config.kiosk_mode : {};
 }
 
@@ -55,6 +60,7 @@ function kiosk_mode() {
   let hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
 
   const config = getConfig();
+  llAttempts = 0;
   const adminConf = config.admin_settings;
   const nonAdminConf = config.non_admin_settings;
   let userConf = config.user_settings;
