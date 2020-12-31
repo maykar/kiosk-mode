@@ -7,15 +7,13 @@ let config;
 let ll;
 
 function getConfig() {
-  if (llAttempts < 20 && !config) {
-    llAttempts++;
-    try {
-      const llConfig = ll.lovelace.config;
-      config = llConfig.kiosk_mode || {};
-      llAttempts = 0;
-    } catch {
-      return;
-    }
+  llAttempts++;
+  try {
+    const llConfig = ll.lovelace.config;
+    config = llConfig.kiosk_mode || {};
+    llAttempts = 0;
+  } catch {
+    return;
   }
 }
 
