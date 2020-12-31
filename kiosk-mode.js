@@ -3,16 +3,20 @@ const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 let llAttempts = 0;
+let config;
+let ll;
 
 function getConfig() {
-  const ll = main.querySelector("ha-panel-lovelace");
-  if (ll && (!ll.lovelace || !ll.lovelace.config) && llAttempts < 10) {
-    llAttempts++
-    setTimeout(() => getConfig(), 50)
+  if (llAttempts < 20 && !config) {
+    llAttempts++;
+    try {
+      const llConfig = ll.lovelace.config;
+      config = llConfig.kiosk_mode || {};
+      llAttempts = 0;
+    } catch {
+      return;
+    }
   }
-  return ll && ll.lovelace && ll.lovelace.config && ll.lovelace.config.kiosk_mode
-    ? ll.lovelace.config.kiosk_mode
-    : {};
 }
 
 // Return true if any keyword is found in location.
@@ -51,18 +55,21 @@ if (window.location.search.includes("clear_km_cache")) {
 }
 
 function kiosk_mode() {
+  ll = main.querySelector("ha-panel-lovelace")
   const url = window.location.search;
   const hass = ha.hass;
 
-  // Disable styling if "disable_km" in URL.
-  if (url.includes("disable_km")) return;
+  // Return if not a Lovelace page or disabled via query string.
+  if (url.includes("disable_km") || !ll) return;
+
+  // Get config.
+  getConfig();
+  while (llAttempts < 20 && !config) setTimeout(() => getConfig, 50);
 
   // Retrieve localStorage values & query string options.
   let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
   let hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
 
-  const config = getConfig();
-  llAttempts = 0;
   const adminConf = config.admin_settings;
   const nonAdminConf = config.non_admin_settings;
   let userConf = config.user_settings;
@@ -162,6 +169,7 @@ function appLayoutWatch(mutations) {
   for (let mutation of mutations) {
     for (let node of mutation.addedNodes) {
       if (node.localName == "ha-app-layout") {
+        config = null;
         kiosk_mode();
         return;
       }
@@ -177,7 +185,6 @@ for (const [key] of Object.entries(conInfo)) {
   if (conInfo[key].length <= maxLen) conInfo[key] = conInfo[key].padEnd(maxLen);
   if (key == "header") conInfo[key] = `${conInfo[key].slice(0, -1)}⋮ `;
 }
-const header =
-  "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
+const header = "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
 const info = "border-width:0px 1px 1px 1px;padding:7px;background:white;color:#424242;line-height:0.7;";
 console.info(conInfo.header + br + conInfo.ver, header, "", `${header} ${info}`);
