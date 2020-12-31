@@ -10,7 +10,9 @@ function getConfig() {
     llAttempts++
     setTimeout(() => getConfig(), 50)
   }
-  return ll && ll.lovelace.config.kiosk_mode ? ll.lovelace.config.kiosk_mode : {};
+  return ll && ll.lovelace && ll.lovelace.config && ll.lovelace.config.kiosk_mode
+    ? ll.lovelace.config.kiosk_mode
+    : {};
 }
 
 // Return true if any keyword is found in location.
