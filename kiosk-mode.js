@@ -3,14 +3,14 @@ const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 let llAttempts = 0;
-let config;
+let config = {};
 let ll;
 
 function getConfig() {
   llAttempts++;
   try {
     const llConfig = ll.lovelace.config;
-    config = llConfig.kiosk_mode || {};
+    config = llConfig.kiosk_mode;
     llAttempts = 0;
   } catch {
     if (llAttempts < 40) setTimeout(() => getConfig(), 50)
