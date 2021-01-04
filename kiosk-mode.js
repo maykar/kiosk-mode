@@ -169,7 +169,7 @@ function appLayoutWatch(mutations) {
     for (let node of mutation.addedNodes) {
       if (node.localName == "ha-app-layout") {
         config = null;
-        kiosk_mode();
+        loadConfig();
         return;
       }
     }
