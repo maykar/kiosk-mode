@@ -10,7 +10,7 @@ function getConfig() {
   llAttempts++;
   try {
     const llConfig = ll.lovelace.config;
-    config = llConfig.kiosk_mode;
+    config = llConfig.kiosk_mode || {};
     llAttempts = 0;
   } catch {
     if (llAttempts < 40) setTimeout(() => getConfig(), 50)
