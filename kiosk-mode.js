@@ -55,7 +55,6 @@ if (window.location.search.includes("clear_km_cache")) {
 function loadConfig() {
   ll = main.querySelector("ha-panel-lovelace")
   const url = window.location.search;
-  const hass = ha.hass;
 
   // Return if not a Lovelace page or disabled via query string.
   if (url.includes("disable_km") || !ll) return;
@@ -64,6 +63,7 @@ function loadConfig() {
 }
 
 function kiosk_mode() {
+  const hass = ha.hass;
   llAttempts = 0;
   // Retrieve localStorage values & query string options.
   let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
