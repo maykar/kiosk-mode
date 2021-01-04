@@ -13,7 +13,7 @@ function getConfig() {
     config = llConfig.kiosk_mode || {};
     llAttempts = 0;
   } catch {
-    return;
+    if (llAttempts < 40) setTimeout(() => getConfig(), 50)
   }
 }
 
@@ -60,9 +60,7 @@ function kiosk_mode() {
   // Return if not a Lovelace page or disabled via query string.
   if (url.includes("disable_km") || !ll) return;
 
-  // Get config.
   getConfig();
-  while (llAttempts < 20 && !config) setTimeout(() => getConfig, 50);
 
   // Retrieve localStorage values & query string options.
   let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
