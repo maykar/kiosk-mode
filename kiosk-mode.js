@@ -11,7 +11,7 @@ function getConfig() {
   try {
     const llConfig = ll.lovelace.config;
     config = llConfig.kiosk_mode || {};
-    llAttempts = 0;
+    kiosk_mode();
   } catch {
     if (llAttempts < 40) setTimeout(() => getConfig(), 50)
   }
@@ -52,15 +52,19 @@ if (window.location.search.includes("clear_km_cache")) {
   ["kmHeader", "kmSidebar"].forEach((k) => setCache(k, "false"));
 }
 
-function kiosk_mode() {
+function loadConfig() {
   ll = main.querySelector("ha-panel-lovelace")
   const url = window.location.search;
-  const hass = ha.hass;
 
   // Return if not a Lovelace page or disabled via query string.
   if (url.includes("disable_km") || !ll) return;
 
   getConfig();
+}
+
+function kiosk_mode() {
+  const hass = ha.hass;
+  llAttempts = 0;
 
   // Retrieve localStorage values & query string options.
   let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
@@ -127,7 +131,7 @@ function kiosk_mode() {
 }
 
 // Initial run.
-kiosk_mode();
+loadConfig();
 
 // Watch for changes in partial-panel-resolver's children.
 new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
@@ -165,8 +169,8 @@ function appLayoutWatch(mutations) {
   for (let mutation of mutations) {
     for (let node of mutation.addedNodes) {
       if (node.localName == "ha-app-layout") {
-        config = null;
-        kiosk_mode();
+        config = {};
+        loadConfig();
         return;
       }
     }
