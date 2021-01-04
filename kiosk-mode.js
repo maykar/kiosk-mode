@@ -64,6 +64,7 @@ function loadConfig() {
 }
 
 function kiosk_mode() {
+  llAttempts = 0;
   // Retrieve localStorage values & query string options.
   let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
   let hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
