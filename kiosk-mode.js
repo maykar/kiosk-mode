@@ -65,6 +65,7 @@ function loadConfig() {
 function kiosk_mode() {
   const hass = ha.hass;
   llAttempts = 0;
+
   // Retrieve localStorage values & query string options.
   let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
   let hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
@@ -168,7 +169,7 @@ function appLayoutWatch(mutations) {
   for (let mutation of mutations) {
     for (let node of mutation.addedNodes) {
       if (node.localName == "ha-app-layout") {
-        config = null;
+        config = {};
         loadConfig();
         return;
       }
