@@ -74,7 +74,7 @@ views:
 ## Conditional Lovelace Config
 Contitional config takes priority and if a condition matches, all other config options/methods are ignored.
 
-These use the same options as above, but placed under one of the following user conditions:
+These use the same options as above, but placed under one of the following user/entity conditions:
 
 **admin_settings:**
 Sets the config for every admin user.
@@ -106,6 +106,23 @@ kiosk_mode:
       hide_sidebar: true
     - users:
         - "the wife"
+      kiosk: true
+```
+
+**entity_settings:**
+Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below.
+
+```
+kiosk_mode:
+  entity_settings:
+    - entity:
+        input_boolean.hide_sidebar: 'on'
+      hide_sidebar: true
+    - entity:
+        input_boolean.hide_header: 'on'
+      hide_header: true
+    - entity:
+        input_boolean.kiosk: 'on'
       kiosk: true
 ```
 <br>
