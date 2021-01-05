@@ -110,7 +110,7 @@ kiosk_mode:
 ```
 
 **entity_settings:**
-Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below.
+Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.
 
 ```
 kiosk_mode:
