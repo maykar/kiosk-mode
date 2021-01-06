@@ -7,15 +7,26 @@ let llAttempts = 0;
 let config = {};
 let ll;
 
-function getConfig() {
+// Clear cache if requested.
+if (locIncludes(["clear_km_cache"])) {
+  ["kmHeader", "kmSidebar"].forEach((k) => setCache(k, "false"));
+}
+
+function getConfig(ll) {
   llAttempts++;
   try {
     const llConfig = ll.lovelace.config;
     config = llConfig.kiosk_mode || {};
     kiosk_mode();
   } catch {
-    if (llAttempts < 40) setTimeout(() => getConfig(), 50)
+    if (llAttempts < 40) setTimeout(() => getConfig(), 50);
   }
+}
+
+function loadConfig() {
+  const ll = main.querySelector("ha-panel-lovelace");
+  if (locIncludes(["disable_km"]) || !ll) return;
+  getConfig(ll);
 }
 
 // Return true if any keyword is found in location.
@@ -26,7 +37,7 @@ function locIncludes(keywords) {
 
 // Check if element exists and if style element already exists.
 function styleCheck(elem) {
-  return elem && !elem.querySelector("#kiosk_mode");
+  return elem && elem.querySelector("#kiosk_mode");
 }
 
 // Insert style element.
@@ -47,21 +58,6 @@ function setCache(k, v) {
 // Retrieve localStorage item as bool.
 function cacheAsBool(k) {
   return window.localStorage.getItem(k) == "true";
-}
-
-// Clear cache if requested.
-if (window.location.search.includes("clear_km_cache")) {
-  ["kmHeader", "kmSidebar"].forEach((k) => setCache(k, "false"));
-}
-
-function loadConfig() {
-  ll = main.querySelector("ha-panel-lovelace")
-  const url = window.location.search;
-
-  // Return if not a Lovelace page or disabled via query string.
-  if (url.includes("disable_km") || !ll) return;
-
-  getConfig();
 }
 
 function kiosk_mode() {
@@ -92,18 +88,6 @@ function kiosk_mode() {
     hide_sidebar = nonAdminConf.kiosk || nonAdminConf.hide_sidebar;
   }
 
-  if (userConf) {
-    if (!Array.isArray(userConf)) userConf = [userConf];
-    for (let conf of userConf) {
-      let users = conf.users;
-      if (!Array.isArray(conf.users)) users = [users];
-      if (users.some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
-        hide_header = conf.kiosk || conf.hide_header;
-        hide_sidebar = conf.kiosk || conf.hide_sidebar;
-      }
-    }
-  }
-
   if (entityConf) {
     for (let ent of entityConf) {
       const entity = Object.keys(ent.entity)[0];
@@ -121,6 +105,18 @@ function kiosk_mode() {
     }
   }
 
+  if (userConf) {
+    if (!Array.isArray(userConf)) userConf = [userConf];
+    for (let conf of userConf) {
+      let users = conf.users;
+      if (!Array.isArray(conf.users)) users = [users];
+      if (users.some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
+        hide_header = conf.kiosk || conf.hide_header;
+        hide_sidebar = conf.kiosk || conf.hide_sidebar;
+      }
+    }
+  }
+
   const lovelace = main.querySelector("ha-panel-lovelace");
   const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
   const toolbar = huiRoot ? huiRoot.querySelector("app-toolbar") : null;
@@ -128,37 +124,31 @@ function kiosk_mode() {
   // Only run if needed.
   if (hide_sidebar || hide_header) {
     // Insert style element for kiosk or hide_header options.
-    if (hide_header && styleCheck(huiRoot)) {
+    if (hide_header && !styleCheck(huiRoot)) {
       const css = "#view { min-height: 100vh !important } app-header { display: none }";
       addStyles(css, huiRoot);
 
       // Set localStorage cache for hiding header.
-      if (url.includes("cache")) setCache("kmHeader", "true");
+      if (locIncludes(["cache"])) setCache("kmHeader", "true");
     }
 
     // Insert style element for kiosk or hide_sidebar options.
-    if (hide_sidebar && styleCheck(drawerLayout)) {
+    if (hide_sidebar && !styleCheck(drawerLayout)) {
       const css = ":host { --app-drawer-width: 0 !important } #drawer { display: none }";
       addStyles(css, drawerLayout);
 
       // Hide menu button.
-      if (styleCheck(toolbar)) addStyles("ha-menu-button { display:none !important } ", toolbar);
+      if (!styleCheck(toolbar)) addStyles("ha-menu-button { display:none !important } ", toolbar);
 
       // Set localStorage cache for hiding sidebar.
-      if (url.includes("cache")) setCache("kmSidebar", "true");
+      if (locIncludes(["cache"])) setCache("kmSidebar", "true");
     }
   }
 
   // Remove styles if no longer hidden
-  if (!hide_header && !styleCheck(huiRoot)) {
-    huiRoot.querySelector("#kiosk_mode").remove()
-  }
-  if (!hide_sidebar && !styleCheck(drawerLayout)) {
-    drawerLayout.querySelector("#kiosk_mode").remove()
-  }
-  if (!hide_sidebar && toolbar.querySelector("#kiosk_mode_menu")) {
-    toolbar.querySelector("#kiosk_mode_menu").remove()
-  }
+  if (!hide_header && styleCheck(huiRoot)) huiRoot.querySelector("#kiosk_mode").remove();
+  if (!hide_sidebar && styleCheck(drawerLayout)) drawerLayout.querySelector("#kiosk_mode").remove();
+  if (!hide_sidebar && toolbar.querySelector("#kiosk_mode_menu")) toolbar.querySelector("#kiosk_mode_menu").remove();
 
   window.dispatchEvent(new Event("resize"));
 }
@@ -171,40 +161,31 @@ new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
 function lovelaceWatch(mutations) {
-  for (let mutation of mutations) {
-    for (let node of mutation.addedNodes) {
-      if (node.localName == "ha-panel-lovelace") {
-        new MutationObserver(rootWatch).observe(node.shadowRoot, {
-          childList: true,
-        });
-        return;
-      }
-    }
-  }
+  mutationWatch(mutations, "ha-panel-lovelace", rootWatch);
 }
 
 // When hui-root appears watch it's children.
 function rootWatch(mutations) {
-  for (let mutation of mutations) {
-    for (let node of mutation.addedNodes) {
-      if (node.localName == "hui-root") {
-        new MutationObserver(appLayoutWatch).observe(node.shadowRoot, {
-          childList: true,
-        });
-        return;
-      }
-    }
-  }
+  mutationWatch(mutations, "hui-root", appLayoutWatch);
 }
 
 // When ha-app-layout appears we can run.
 function appLayoutWatch(mutations) {
+  mutationWatch(mutations, "ha-app-layout", null);
+}
+
+function mutationWatch(mutations, nodename, action) {
   for (let mutation of mutations) {
     for (let node of mutation.addedNodes) {
-      if (node.localName == "ha-app-layout") {
-        window.kiosk_entities = [];
-        config = {};
-        loadConfig();
+      if (node.localName == nodename) {
+        if (action) {
+          new MutationObserver(action).observe(node.shadowRoot, {
+            childList: true,
+          });
+        } else {
+          config = {};
+          loadConfig();
+        }
         return;
       }
     }
