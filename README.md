@@ -72,12 +72,13 @@ views:
 *Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*<br><br>
 
 ## Conditional Lovelace Config
-Contitional config takes priority and if a condition matches, all other config options/methods are ignored.
+Contitional configs take priority and if a condition matches all other config options/methods are ignored.
 
 These use the same options as above, but placed under one of the following user/entity conditions:
 
-**admin_settings:**
-Sets the config for every admin user.
+**admin_settings:**<br>
+Sets the config for every admin user.<br><br>
+*Overwritten by entity_settings & user_settings.*
 
 ```
 kiosk_mode:
@@ -85,8 +86,9 @@ kiosk_mode:
     hide_header: true
 ```
 
-**non_admin_settings:**
-Sets the config for every regular user.
+**non_admin_settings:**<br>
+Sets the config for every regular user.<br><br>
+*Overwritten by entity_settings & user_settings.*
 
 ```
 kiosk_mode:
@@ -94,23 +96,9 @@ kiosk_mode:
     hide_header: true
 ```
 
-**user_settings:**
-Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.
-
-```
-kiosk_mode:
-  user_settings:
-    - users:
-        - "ryan meek"
-        - "maykar"
-      hide_sidebar: true
-    - users:
-        - "the wife"
-      kiosk: true
-```
-
-**entity_settings:**
-Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.
+**entity_settings:**<br>
+Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.<br><br>
+*Overwritten by user_settings.*
 
 ```
 kiosk_mode:
@@ -123,6 +111,22 @@ kiosk_mode:
       hide_header: true
     - entity:
         input_boolean.kiosk: 'on'
+      kiosk: true
+```
+
+**user_settings:**<br>
+Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.<br><br>
+*Takes priority over all other config settings.*
+
+```
+kiosk_mode:
+  user_settings:
+    - users:
+        - "ryan meek"
+        - "maykar"
+      hide_sidebar: true
+    - users:
+        - "the wife"
       kiosk: true
 ```
 <br>
