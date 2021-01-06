@@ -77,7 +77,7 @@ Contitional configs take priority and if a condition matches all other config op
 These use the same options as above, but placed under one of the following user/entity conditions:
 
 **admin_settings:**<br>
-Sets the config for every admin user.<br>
+Sets the config for every admin user.<br><br>
 *Overwritten by entity_settings & user_settings.*<br>
 
 ```
