@@ -77,28 +77,30 @@ Contitional configs take priority and if a condition matches all other config op
 These use the same options as above, but placed under one of the following user/entity conditions:
 
 **admin_settings:**<br>
-Sets the config for every admin user.<br><br>
-*Overwritten by entity_settings & user_settings.*
+Sets the config for every admin user.<br>
+*Overwritten by entity_settings & user_settings.*<br>
 
 ```
 kiosk_mode:
   admin_settings:
     hide_header: true
 ```
+<br>
 
 **non_admin_settings:**<br>
 Sets the config for every regular user.<br><br>
-*Overwritten by entity_settings & user_settings.*
+*Overwritten by entity_settings & user_settings.*<br>
 
 ```
 kiosk_mode:
   non_admin_settings:
     hide_header: true
 ```
+<br>
 
 **entity_settings:**<br>
 Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.<br><br>
-*Overwritten by user_settings.*
+*Overwritten by user_settings.*<br>
 
 ```
 kiosk_mode:
@@ -113,10 +115,11 @@ kiosk_mode:
         input_boolean.kiosk: 'on'
       kiosk: true
 ```
+<br>
 
 **user_settings:**<br>
 Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.<br><br>
-*Takes priority over all other config settings.*
+*Takes priority over all other config settings.*<br>
 
 ```
 kiosk_mode:
