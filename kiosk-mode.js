@@ -2,52 +2,31 @@ const ha = document.querySelector("home-assistant");
 const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
-window.kiosk_entities = [];
 let llAttempts = 0;
 let config = {};
-let ll;
+window.kiosk_entities = [];
 
-// Clear cache if requested.
-if (locIncludes(["clear_km_cache"])) {
-  ["kmHeader", "kmSidebar"].forEach((k) => setCache(k, "false"));
+function run() {
+  const lovelace = main.querySelector("ha-panel-lovelace");
+  if (queryString("disable_km") || !lovelace) return;
+  getConfig(lovelace);
 }
 
-function getConfig(ll) {
+function getConfig(lovelace) {
   llAttempts++;
   try {
-    const llConfig = ll.lovelace.config;
+    const llConfig = lovelace.lovelace.config;
     config = llConfig.kiosk_mode || {};
-    kiosk_mode();
+    kiosk_mode(lovelace);
   } catch {
     if (llAttempts < 40) setTimeout(() => getConfig(), 50);
   }
 }
 
-function loadConfig() {
-  const ll = main.querySelector("ha-panel-lovelace");
-  if (locIncludes(["disable_km"]) || !ll) return;
-  getConfig(ll);
-}
-
-// Return true if any keyword is found in location.
-function locIncludes(keywords) {
-  const url = window.location.search;
-  return keywords.some((x) => url.includes(x));
-}
-
-// Check if element exists and if style element already exists.
-function styleCheck(elem) {
-  return elem && elem.querySelector("#kiosk_mode");
-}
-
-// Insert style element.
-function addStyles(css, elem) {
-  const style = document.createElement("style");
-  const id = elem.localName == "app-toolbar" ? "kiosk_mode_menu" : "kiosk_mode";
-  style.setAttribute("id", id);
-  style.innerHTML = css;
-  elem.appendChild(style);
-  window.dispatchEvent(new Event("resize"));
+// Return true if any keyword is found in query strings.
+function queryString(keywords) {
+  if (!Array.isArray(keywords)) keywords = [keywords];
+  return keywords.some((x) => window.location.search.includes(x));
 }
 
 // Set localStorage item.
@@ -56,22 +35,43 @@ function setCache(k, v) {
 }
 
 // Retrieve localStorage item as bool.
-function cacheAsBool(k) {
+function cached(k) {
   return window.localStorage.getItem(k) == "true";
 }
 
-function kiosk_mode() {
-  const hass = ha.hass;
+// Check if element and style element exist.
+function styleExists(elem) {
+  return elem.querySelector("#kiosk_mode_" + elem.localName);
+}
+
+// Insert style element.
+function addStyle(css, elem) {
+  if (!styleExists(elem)) {
+    const style = document.createElement("style");
+    style.setAttribute("id", "kiosk_mode_" + elem.localName);
+    style.innerHTML = css;
+    elem.appendChild(style);
+  }
+}
+
+// Remove style element.
+function removeStyle(elem) {
+  if (styleExists(elem)) elem.querySelector("#kiosk_mode_" + elem.localName).remove();
+}
+
+function kiosk_mode(lovelace) {
   llAttempts = 0;
-
-  // Retrieve localStorage values & query string options.
-  let hide_header = cacheAsBool("kmHeader") || locIncludes(["kiosk", "hide_header"]);
-  let hide_sidebar = cacheAsBool("kmSidebar") || locIncludes(["kiosk", "hide_sidebar"]);
-
+  const hass = ha.hass;
+  const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
+  const toolbar = huiRoot.querySelector("app-toolbar");
   const adminConf = config.admin_settings;
   const nonAdminConf = config.non_admin_settings;
+  const entityConf = config.entity_settings;
   let userConf = config.user_settings;
-  let entityConf = config.entity_settings;
+
+  // Retrieve localStorage values & query string options.
+  let hide_header = cached("kmHeader") || queryString(["kiosk", "hide_header"]);
+  let hide_sidebar = cached("kmSidebar") || queryString(["kiosk", "hide_sidebar"]);
   const queryStringsSet = hide_sidebar || hide_header;
 
   // Use config values only if config strings and cache aren't used.
@@ -91,8 +91,8 @@ function kiosk_mode() {
   if (entityConf) {
     for (let ent of entityConf) {
       const entity = Object.keys(ent.entity)[0];
-      if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity)
       const state = ent.entity[entity];
+      if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity);
       if (hass.states[entity].state == state) {
         if ("kiosk" in ent) {
           hide_header = ent.kiosk;
@@ -109,7 +109,7 @@ function kiosk_mode() {
     if (!Array.isArray(userConf)) userConf = [userConf];
     for (let conf of userConf) {
       let users = conf.users;
-      if (!Array.isArray(conf.users)) users = [users];
+      if (!Array.isArray(users)) users = [users];
       if (users.some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
         hide_header = conf.kiosk || conf.hide_header;
         hide_sidebar = conf.kiosk || conf.hide_sidebar;
@@ -117,46 +117,49 @@ function kiosk_mode() {
     }
   }
 
-  const lovelace = main.querySelector("ha-panel-lovelace");
-  const huiRoot = lovelace ? lovelace.shadowRoot.querySelector("hui-root").shadowRoot : null;
-  const toolbar = huiRoot ? huiRoot.querySelector("app-toolbar") : null;
-
-  // Only run if needed.
-  if (hide_sidebar || hide_header) {
-    // Insert style element for kiosk or hide_header options.
-    if (hide_header && !styleCheck(huiRoot)) {
-      const css = "#view { min-height: 100vh !important } app-header { display: none }";
-      addStyles(css, huiRoot);
-
-      // Set localStorage cache for hiding header.
-      if (locIncludes(["cache"])) setCache("kmHeader", "true");
-    }
-
-    // Insert style element for kiosk or hide_sidebar options.
-    if (hide_sidebar && !styleCheck(drawerLayout)) {
-      const css = ":host { --app-drawer-width: 0 !important } #drawer { display: none }";
-      addStyles(css, drawerLayout);
-
-      // Hide menu button.
-      if (!styleCheck(toolbar)) addStyles("ha-menu-button { display:none !important } ", toolbar);
-
-      // Set localStorage cache for hiding sidebar.
-      if (locIncludes(["cache"])) setCache("kmSidebar", "true");
-    }
+  if (hide_header) {
+    addStyle("#view { min-height: 100vh !important } app-header { display: none }", huiRoot);
+    if (queryString("cache")) setCache("kmHeader", "true");
   }
 
-  // Remove styles if no longer hidden
-  if (!hide_header && styleCheck(huiRoot)) huiRoot.querySelector("#kiosk_mode").remove();
-  if (!hide_sidebar && styleCheck(drawerLayout)) drawerLayout.querySelector("#kiosk_mode").remove();
-  if (!hide_sidebar && toolbar.querySelector("#kiosk_mode_menu")) toolbar.querySelector("#kiosk_mode_menu").remove();
+  if (hide_sidebar) {
+    addStyle(":host { --app-drawer-width: 0 !important } #drawer { display: none }", drawerLayout);
+    addStyle("ha-menu-button { display:none !important } ", toolbar);
+    if (queryString("cache")) setCache("kmSidebar", "true");
+  }
+
+  if (!hide_header) removeStyle(huiRoot);
+  if (!hide_sidebar) removeStyle(toolbar);
+  if (!hide_sidebar) removeStyle(drawerLayout);
 
   window.dispatchEvent(new Event("resize"));
 }
 
-// Initial run.
-loadConfig();
+// Clear cache if requested.
+if (queryString("clear_km_cache")) ["kmHeader", "kmSidebar"].forEach((k) => setCache(k, "false"));
 
-// Watch for changes in partial-panel-resolver's children.
+// Initial run.
+run();
+
+// Run on entity state change events.
+window.hassConnection.then(
+  ({ conn }) =>
+    (conn.socket.onmessage = (e) => {
+      if (window.kiosk_entities.length < 1) return;
+      const event = JSON.parse(e.data).event;
+      if (
+        event &&
+        event.event_type == "state_changed" &&
+        window.kiosk_entities.includes(event.data.entity_id) &&
+        event.data.new_state.state != event.data.old_state.state
+      ) {
+        config = {};
+        run();
+      }
+    })
+);
+
+// Run on element changes.
 new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
 
 // If new lovelace panel was added watch for hui-root to appear.
@@ -174,38 +177,23 @@ function appLayoutWatch(mutations) {
   mutationWatch(mutations, "ha-app-layout", null);
 }
 
-function mutationWatch(mutations, nodename, action) {
+function mutationWatch(mutations, nodename, observeElem) {
   for (let mutation of mutations) {
     for (let node of mutation.addedNodes) {
       if (node.localName == nodename) {
-        if (action) {
-          new MutationObserver(action).observe(node.shadowRoot, {
+        if (observeElem) {
+          new MutationObserver(observeElem).observe(node.shadowRoot, {
             childList: true,
           });
         } else {
           config = {};
-          loadConfig();
+          run();
         }
         return;
       }
     }
   }
 }
-
-// Run on state change events
-window.hassConnection.then(({conn}) => conn.socket.onmessage = (e) => {
-  if (window.kiosk_entities.length < 1) return;
-  const event = JSON.parse(e.data).event;
-  if (
-    event &&
-    event.event_type == "state_changed" &&
-    (event.data.new_state.state != event.data.old_state.state) &&
-    window.kiosk_entities.includes(event.data.entity_id)
-  ) {
-    config = {};
-    loadConfig();
-  }
-});
 
 // Overly complicated console tag.
 const conInfo = { header: "%c≡ kiosk-mode".padEnd(27), ver: "%cversion *DEV " };
@@ -215,6 +203,7 @@ for (const [key] of Object.entries(conInfo)) {
   if (conInfo[key].length <= maxLen) conInfo[key] = conInfo[key].padEnd(maxLen);
   if (key == "header") conInfo[key] = `${conInfo[key].slice(0, -1)}⋮ `;
 }
-const header = "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
+const header =
+  "display:inline-block;border-width:1px 1px 0 1px;border-style:solid;border-color:#424242;color:white;background:#03a9f4;font-size:12px;padding:4px 4.5px 5px 6px;";
 const info = "border-width:0px 1px 1px 1px;padding:7px;background:white;color:#424242;line-height:0.7;";
 console.info(conInfo.header + br + conInfo.ver, header, "", `${header} ${info}`);
