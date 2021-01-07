@@ -44,14 +44,14 @@ function cached(k) {
 
 // Check if element and style element exist.
 function styleExists(elem) {
-  return elem.querySelector("#kiosk_mode_" + elem.localName);
+  return elem.querySelector(`#kiosk_mode_${elem.localName}`);
 }
 
 // Insert style element.
 function addStyle(css, elem) {
   if (!styleExists(elem)) {
     const style = document.createElement("style");
-    style.setAttribute("id", "kiosk_mode_" + elem.localName);
+    style.setAttribute("id", `kiosk_mode_${elem.localName}`);
     style.innerHTML = css;
     elem.appendChild(style);
   }
@@ -59,11 +59,9 @@ function addStyle(css, elem) {
 
 // Remove style element.
 function removeStyle(elements) {
-  for (let elem of array(elements)) {
-    if (styleExists(elem)) {
-      elem.querySelector("#kiosk_mode_" + elem.localName).remove();
-    }
-  }
+  array(elements).forEach((elem) => {
+    if (styleExists(elem)) elem.querySelector(`#kiosk_mode_${elem.localName}`).remove();
+  });
 }
 
 function kiosk_mode(lovelace) {
@@ -71,10 +69,10 @@ function kiosk_mode(lovelace) {
   const hass = ha.hass;
   const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
   const appToolbar = huiRoot.querySelector("app-toolbar");
-  const adminConf = config.admin_settings;
-  const nonAdminConf = config.non_admin_settings;
-  const entityConf = config.entity_settings;
-  let userConf = config.user_settings;
+  const adminConfig = config.admin_settings;
+  const nonAdminConfig = config.non_admin_settings;
+  const entityConfig = config.entity_settings;
+  let userConfig = config.user_settings;
 
   // Retrieve localStorage values & query string options.
   let hide_header = cached("kmHeader") || queryString(["kiosk", "hide_header"]);
@@ -85,34 +83,31 @@ function kiosk_mode(lovelace) {
   hide_header = queryStringsSet ? hide_header : config.kiosk || config.hide_header;
   hide_sidebar = queryStringsSet ? hide_sidebar : config.kiosk || config.hide_sidebar;
 
-  if (adminConf && hass.user.is_admin) {
-    hide_header = adminConf.kiosk || adminConf.hide_header;
-    hide_sidebar = adminConf.kiosk || adminConf.hide_sidebar;
+  if (adminConfig && hass.user.is_admin) {
+    hide_header = adminConfig.kiosk || adminConfig.hide_header;
+    hide_sidebar = adminConfig.kiosk || adminConfig.hide_sidebar;
   }
 
-  if (nonAdminConf && !hass.user.is_admin) {
-    hide_header = nonAdminConf.kiosk || nonAdminConf.hide_header;
-    hide_sidebar = nonAdminConf.kiosk || nonAdminConf.hide_sidebar;
+  if (nonAdminConfig && !hass.user.is_admin) {
+    hide_header = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
+    hide_sidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
   }
 
-  if (entityConf) {
-    for (let ent of entityConf) {
-      const entity = Object.keys(ent.entity)[0];
-      const state = ent.entity[entity];
+  if (entityConfig) {
+    for (let conf of entityConfig) {
+      const entity = Object.keys(conf.entity)[0];
+      const state = conf.entity[entity];
       if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity);
       if (hass.states[entity].state == state) {
-        if ("kiosk" in ent) {
-          hide_header = hide_sidebar = ent.kiosk;
-        } else {
-          if ("hide_header" in ent) hide_header = ent.hide_header;
-          if ("hide_sidebar" in ent) hide_sidebar = ent.hide_sidebar;
-        }
+        if ("hide_header" in conf) hide_header = conf.hide_header;
+        if ("hide_sidebar" in conf) hide_sidebar = conf.hide_sidebar;
+        if ("kiosk" in conf) hide_header = hide_sidebar = conf.kiosk;
       }
     }
   }
 
-  if (userConf) {
-    for (let conf of array(userConf)) {
+  if (userConfig) {
+    for (let conf of array(userConfig)) {
       if (array(conf.users).some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
         hide_header = conf.kiosk || conf.hide_header;
         hide_sidebar = conf.kiosk || conf.hide_sidebar;
