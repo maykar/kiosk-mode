@@ -23,10 +23,13 @@ function getConfig(lovelace) {
   }
 }
 
+function array(x) {
+  return Array.isArray(x) ? x : [x];
+}
+
 // Return true if any keyword is found in query strings.
 function queryString(keywords) {
-  if (!Array.isArray(keywords)) keywords = [keywords];
-  return keywords.some((x) => window.location.search.includes(x));
+  return array(keywords).some((x) => window.location.search.includes(x));
 }
 
 // Set localStorage item.
@@ -55,15 +58,19 @@ function addStyle(css, elem) {
 }
 
 // Remove style element.
-function removeStyle(elem) {
-  if (styleExists(elem)) elem.querySelector("#kiosk_mode_" + elem.localName).remove();
+function removeStyle(elements) {
+  for (let elem of array(elements)) {
+    if (styleExists(elem)) {
+      elem.querySelector("#kiosk_mode_" + elem.localName).remove();
+    }
+  }
 }
 
 function kiosk_mode(lovelace) {
   llAttempts = 0;
   const hass = ha.hass;
   const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
-  const toolbar = huiRoot.querySelector("app-toolbar");
+  const appToolbar = huiRoot.querySelector("app-toolbar");
   const adminConf = config.admin_settings;
   const nonAdminConf = config.non_admin_settings;
   const entityConf = config.entity_settings;
@@ -95,8 +102,7 @@ function kiosk_mode(lovelace) {
       if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity);
       if (hass.states[entity].state == state) {
         if ("kiosk" in ent) {
-          hide_header = ent.kiosk;
-          hide_sidebar = ent.kiosk;
+          hide_header = hide_sidebar = ent.kiosk;
         } else {
           if ("hide_header" in ent) hide_header = ent.hide_header;
           if ("hide_sidebar" in ent) hide_sidebar = ent.hide_sidebar;
@@ -106,11 +112,8 @@ function kiosk_mode(lovelace) {
   }
 
   if (userConf) {
-    if (!Array.isArray(userConf)) userConf = [userConf];
-    for (let conf of userConf) {
-      let users = conf.users;
-      if (!Array.isArray(users)) users = [users];
-      if (users.some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
+    for (let conf of array(userConf)) {
+      if (array(conf.users).some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
         hide_header = conf.kiosk || conf.hide_header;
         hide_sidebar = conf.kiosk || conf.hide_sidebar;
       }
@@ -120,17 +123,17 @@ function kiosk_mode(lovelace) {
   if (hide_header) {
     addStyle("#view { min-height: 100vh !important } app-header { display: none }", huiRoot);
     if (queryString("cache")) setCache("kmHeader", "true");
+  } else {
+    removeStyle(huiRoot);
   }
 
   if (hide_sidebar) {
     addStyle(":host { --app-drawer-width: 0 !important } #drawer { display: none }", drawerLayout);
-    addStyle("ha-menu-button { display:none !important } ", toolbar);
+    addStyle("ha-menu-button { display:none !important }", appToolbar);
     if (queryString("cache")) setCache("kmSidebar", "true");
+  } else {
+    removeStyle([appToolbar, drawerLayout]);
   }
-
-  if (!hide_header) removeStyle(huiRoot);
-  if (!hide_sidebar) removeStyle(toolbar);
-  if (!hide_sidebar) removeStyle(drawerLayout);
 
   window.dispatchEvent(new Event("resize"));
 }
