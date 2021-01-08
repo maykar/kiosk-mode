@@ -75,7 +75,7 @@ views:
 
 ## Conditional Lovelace Config
 Contitional configs take priority and if a condition matches all other config options/methods are ignored.
-These use the same options as above, but placed under one of the following user/entity conditions:
+These use the same options as above, but placed under one of the following user/entity conditions:<br><br>
 
 ### admin_settings:
 Sets the config for every admin user.<br>
