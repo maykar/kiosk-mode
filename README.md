@@ -130,10 +130,10 @@ kiosk_mode:
         input_boolean.hide_sidebar: 'on'
       hide_sidebar: true
     - entity:
-        input_boolean.hide_header: 'on'
+        sensor.hide_header: 'on'
       hide_header: true
     - entity:
-        input_boolean.kiosk: 'on'
+        input_text.kiosk: 'true'
       kiosk: true
 ```
 <br>
