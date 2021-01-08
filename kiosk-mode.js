@@ -139,10 +139,17 @@ if (queryString("clear_km_cache")) ["kmHeader", "kmSidebar"].forEach((k) => setC
 run();
 
 // Run on entity state change events.
-window.hassConnection.then(
-  ({ conn }) =>
-    (conn.socket.onmessage = (e) => {
-      if (window.kiosk_entities.length < 1) return;
+function connect() {
+  console.log(window.hassConnection)
+  window.hassConnection.then(({ conn }) => {
+    conn.socket.onclose = () => {
+      window.kiosk_interval = setInterval(() => {
+        if (conn.connected) clearInterval(window.kiosk_interval);
+        connect();
+      }, 1000);
+    }
+    conn.socket.onmessage = (e) => {
+      if (window.kiosk_entities.length < 1 || !e.data) return;
       const event = JSON.parse(e.data).event;
       if (
         event &&
@@ -152,8 +159,11 @@ window.hassConnection.then(
       ) {
         run();
       }
-    })
-);
+    }
+  });
+}
+
+connect();
 
 // Run on element changes.
 new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
