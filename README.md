@@ -78,8 +78,8 @@ Contitional configs take priority and if a condition matches all other config op
 
 These use the same options as above, but placed under one of the following user/entity conditions:
 
-**admin_settings:**<br>
-Sets the config for every admin user.<br><br>
+### admin_settings:
+Sets the config for every admin user.
 *Overwritten by user_settings & entity_settings ( unless `ignore_entity_settings` is used ).*<br>
 
 ```
@@ -89,8 +89,8 @@ kiosk_mode:
 ```
 <br>
 
-**non_admin_settings:**<br>
-Sets the config for every regular user.<br><br>
+### non_admin_settings:
+Sets the config for every regular user.
 *Overwritten by user_settings & entity_settings ( unless `ignore_entity_settings` is used ).*<br>
 
 ```
@@ -101,8 +101,8 @@ kiosk_mode:
 ```
 <br>
 
-**user_settings:**<br>
-Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.<br><br>
+### user_settings:
+Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.
 *Overwritten by entity_settings if `ignore_entity_settings` is not used.*<br>
 
 ```
@@ -119,9 +119,9 @@ kiosk_mode:
 ```
 <br>
 
-**entity_settings:**<br>
-Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.<br><br>
-*Takes priority over all other config settings.*<br>
+### entity_settings:
+Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.
+*Takes priority over all other config settings unless they use `ignore_entity_settings`.*<br>
 
 ```
 kiosk_mode:
