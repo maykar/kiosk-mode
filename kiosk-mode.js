@@ -72,6 +72,7 @@ function kioskMode(lovelace, config) {
   const nonAdminConfig = config.non_admin_settings;
   const entityConfig = config.entity_settings;
   let userConfig = config.user_settings;
+  let ignoreEntity = false;
 
   // Retrieve localStorage values & query string options.
   let hideHeader = cached("kmHeader") || queryString(["kiosk", "hide_header"]);
@@ -85,14 +86,26 @@ function kioskMode(lovelace, config) {
   if (adminConfig && hass.user.is_admin) {
     hideHeader = adminConfig.kiosk || adminConfig.hide_header;
     hideSidebar = adminConfig.kiosk || adminConfig.hide_sidebar;
+    ignoreEntity = adminConfig.ignore_entity_settings;
   }
 
   if (nonAdminConfig && !hass.user.is_admin) {
     hideHeader = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
     hideSidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
+    ignoreEntity = nonAdminConfig.ignore_entity_settings;
   }
 
-  if (entityConfig) {
+  if (userConfig) {
+    for (let conf of array(userConfig)) {
+      if (array(conf.users).some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
+        hideHeader = conf.kiosk || conf.hide_header;
+        hideSidebar = conf.kiosk || conf.hide_sidebar;
+        ignoreEntity = conf.ignore_entity_settings;
+      }
+    }
+  }
+
+  if (entityConfig && !ignoreEntity) {
     for (let conf of entityConfig) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
@@ -101,15 +114,6 @@ function kioskMode(lovelace, config) {
         if ("hide_header" in conf) hideHeader = conf.hide_header;
         if ("hide_sidebar" in conf) hideSidebar = conf.hide_sidebar;
         if ("kiosk" in conf) hideHeader = hideSidebar = conf.kiosk;
-      }
-    }
-  }
-
-  if (userConfig) {
-    for (let conf of array(userConfig)) {
-      if (array(conf.users).some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
-        hideHeader = conf.kiosk || conf.hide_header;
-        hideSidebar = conf.kiosk || conf.hide_sidebar;
       }
     }
   }
