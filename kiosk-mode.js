@@ -3,6 +3,7 @@ const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 let llAttempts = 0;
+window.kiosk_entities = [];
 
 function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
@@ -92,7 +93,6 @@ function kioskMode(lovelace, config) {
   }
 
   if (entityConfig) {
-    window.kiosk_entities = [];
     for (let conf of entityConfig) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
