@@ -96,7 +96,7 @@ function kioskMode(lovelace, config) {
     for (let conf of entityConfig) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
-      window.kiosk_entities.push(entity);
+      if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity);
       if (hass.states[entity].state == state) {
         if ("hide_header" in conf) hideHeader = conf.hide_header;
         if ("hide_sidebar" in conf) hideSidebar = conf.hide_sidebar;
@@ -139,30 +139,24 @@ if (queryString("clear_km_cache")) ["kmHeader", "kmSidebar"].forEach((k) => setC
 run();
 
 // Run on entity state change events.
-function connect() {
+function entityWatch() {
   window.hassConnection.then(({ conn }) => {
+    if (!conn.connected) return;
     conn.socket.onclose = () => {
       window.kiosk_interval = setInterval(() => {
         if (conn.connected) clearInterval(window.kiosk_interval);
-        connect();
-      }, 1000);
-    }
+        entityWatch();
+      }, 5000);
+    };
     conn.socket.onmessage = (e) => {
-      if (window.kiosk_entities.length < 1 || !e.data) return;
-      const event = JSON.parse(e.data).event;
-      if (
-        event &&
-        event.event_type == "state_changed" &&
-        window.kiosk_entities.includes(event.data.entity_id) &&
-        event.data.new_state.state != event.data.old_state.state
-      ) {
-        run();
+      if (e.data && window.kiosk_entities.some((x) => e.data.includes(x) && e.data.includes("state_changed"))) {
+        const event = JSON.parse(e.data).event;
+        if (event.data.new_state.state != event.data.old_state.state) run();
       }
-    }
+    };
   });
 }
-
-connect();
+entityWatch();
 
 // Run on element changes.
 new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
