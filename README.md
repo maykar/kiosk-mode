@@ -60,8 +60,10 @@ resources:
 ## Simple Lovelace Config
 The following config method will be ignored if any [query strings/cache](#query-strings) are used or a [conditional config](#conditional-lovelace-config) has a match.
 
-* `kiosk_mode:` has 3 options: `kiosk`, `hide_header`, and `hide_sidebar`. Set any option to true to activate.
+* `kiosk_mode:` has 4 options: `kiosk`, `hide_header`, `hide_sidebar`, and `ignore_entity_settings`.
+* Set any config option to true to activate.
 * `kiosk: true` sets `hide_header` and `hide_sidebar` to true, no need to set either when it's used.
+* `ignore_entity_settings` is useful only in [conditional configs](#conditional-lovelace-config) and will cause `entity_settings` to be ignored.
 
 ```
 kiosk_mode:
@@ -78,7 +80,7 @@ These use the same options as above, but placed under one of the following user/
 
 **admin_settings:**<br>
 Sets the config for every admin user.<br><br>
-*Overwritten by entity_settings & user_settings.*<br>
+*Overwritten by user_settings & entity_settings ( unless `ignore_entity_settings` is used ).*<br>
 
 ```
 kiosk_mode:
@@ -89,18 +91,37 @@ kiosk_mode:
 
 **non_admin_settings:**<br>
 Sets the config for every regular user.<br><br>
-*Overwritten by entity_settings & user_settings.*<br>
+*Overwritten by user_settings & entity_settings ( unless `ignore_entity_settings` is used ).*<br>
 
 ```
 kiosk_mode:
   non_admin_settings:
     hide_header: true
+    ignore_entity_settings: true
+```
+<br>
+
+**user_settings:**<br>
+Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.<br><br>
+*Overwritten by entity_settings if `ignore_entity_settings` is not used.*<br>
+
+```
+kiosk_mode:
+  user_settings:
+    - users:
+        - "ryan meek"
+        - "maykar"
+      hide_sidebar: true
+    - users:
+        - "the wife"
+      kiosk: true
+      ignore_entity_settings: true
 ```
 <br>
 
 **entity_settings:**<br>
 Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.<br><br>
-*Overwritten by user_settings.*<br>
+*Takes priority over all other config settings.*<br>
 
 ```
 kiosk_mode:
@@ -113,23 +134,6 @@ kiosk_mode:
       hide_header: true
     - entity:
         input_boolean.kiosk: 'on'
-      kiosk: true
-```
-<br>
-
-**user_settings:**<br>
-Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.<br><br>
-*Takes priority over all other config settings.*<br>
-
-```
-kiosk_mode:
-  user_settings:
-    - users:
-        - "ryan meek"
-        - "maykar"
-      hide_sidebar: true
-    - users:
-        - "the wife"
       kiosk: true
 ```
 <br>
