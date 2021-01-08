@@ -140,7 +140,6 @@ run();
 
 // Run on entity state change events.
 function connect() {
-  console.log(window.hassConnection)
   window.hassConnection.then(({ conn }) => {
     conn.socket.onclose = () => {
       window.kiosk_interval = setInterval(() => {
