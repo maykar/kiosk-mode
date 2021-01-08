@@ -3,8 +3,6 @@ const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 let llAttempts = 0;
-let config = {};
-window.kiosk_entities = [];
 
 function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
@@ -16,10 +14,10 @@ function getConfig(lovelace) {
   llAttempts++;
   try {
     const llConfig = lovelace.lovelace.config;
-    config = llConfig.kiosk_mode || {};
-    kiosk_mode(lovelace);
+    const config = llConfig.kiosk_mode || {};
+    kioskMode(lovelace, config);
   } catch {
-    if (llAttempts < 40) setTimeout(() => getConfig(), 50);
+    if (llAttempts < 40) setTimeout(() => getConfig(lovelace), 50);
   }
 }
 
@@ -64,7 +62,7 @@ function removeStyle(elements) {
   });
 }
 
-function kiosk_mode(lovelace) {
+function kioskMode(lovelace, config) {
   llAttempts = 0;
   const hass = ha.hass;
   const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
@@ -75,33 +73,34 @@ function kiosk_mode(lovelace) {
   let userConfig = config.user_settings;
 
   // Retrieve localStorage values & query string options.
-  let hide_header = cached("kmHeader") || queryString(["kiosk", "hide_header"]);
-  let hide_sidebar = cached("kmSidebar") || queryString(["kiosk", "hide_sidebar"]);
-  const queryStringsSet = hide_sidebar || hide_header;
+  let hideHeader = cached("kmHeader") || queryString(["kiosk", "hide_header"]);
+  let hideSidebar = cached("kmSidebar") || queryString(["kiosk", "hide_sidebar"]);
+  const queryStringsSet = hideSidebar || hideHeader;
 
   // Use config values only if config strings and cache aren't used.
-  hide_header = queryStringsSet ? hide_header : config.kiosk || config.hide_header;
-  hide_sidebar = queryStringsSet ? hide_sidebar : config.kiosk || config.hide_sidebar;
+  hideHeader = queryStringsSet ? hideHeader : config.kiosk || config.hide_header;
+  hideSidebar = queryStringsSet ? hideSidebar : config.kiosk || config.hide_sidebar;
 
   if (adminConfig && hass.user.is_admin) {
-    hide_header = adminConfig.kiosk || adminConfig.hide_header;
-    hide_sidebar = adminConfig.kiosk || adminConfig.hide_sidebar;
+    hideHeader = adminConfig.kiosk || adminConfig.hide_header;
+    hideSidebar = adminConfig.kiosk || adminConfig.hide_sidebar;
   }
 
   if (nonAdminConfig && !hass.user.is_admin) {
-    hide_header = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
-    hide_sidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
+    hideHeader = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
+    hideSidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
   }
 
   if (entityConfig) {
+    window.kiosk_entities = [];
     for (let conf of entityConfig) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
-      if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity);
+      window.kiosk_entities.push(entity);
       if (hass.states[entity].state == state) {
-        if ("hide_header" in conf) hide_header = conf.hide_header;
-        if ("hide_sidebar" in conf) hide_sidebar = conf.hide_sidebar;
-        if ("kiosk" in conf) hide_header = hide_sidebar = conf.kiosk;
+        if ("hide_header" in conf) hideHeader = conf.hide_header;
+        if ("hide_sidebar" in conf) hideSidebar = conf.hide_sidebar;
+        if ("kiosk" in conf) hideHeader = hideSidebar = conf.kiosk;
       }
     }
   }
@@ -109,22 +108,22 @@ function kiosk_mode(lovelace) {
   if (userConfig) {
     for (let conf of array(userConfig)) {
       if (array(conf.users).some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
-        hide_header = conf.kiosk || conf.hide_header;
-        hide_sidebar = conf.kiosk || conf.hide_sidebar;
+        hideHeader = conf.kiosk || conf.hide_header;
+        hideSidebar = conf.kiosk || conf.hide_sidebar;
       }
     }
   }
 
-  if (hide_header) {
-    addStyle("#view { min-height: 100vh !important } app-header { display: none }", huiRoot);
+  if (hideHeader) {
+    addStyle("#view{min-height:100vh !important}app-header{display:none}", huiRoot);
     if (queryString("cache")) setCache("kmHeader", "true");
   } else {
     removeStyle(huiRoot);
   }
 
-  if (hide_sidebar) {
-    addStyle(":host { --app-drawer-width: 0 !important } #drawer { display: none }", drawerLayout);
-    addStyle("ha-menu-button { display:none !important }", appToolbar);
+  if (hideSidebar) {
+    addStyle(":host{--app-drawer-width:0 !important}#drawer{display:none}", drawerLayout);
+    addStyle("ha-menu-button{display:none !important}", appToolbar);
     if (queryString("cache")) setCache("kmSidebar", "true");
   } else {
     removeStyle([appToolbar, drawerLayout]);
@@ -151,7 +150,6 @@ window.hassConnection.then(
         window.kiosk_entities.includes(event.data.entity_id) &&
         event.data.new_state.state != event.data.old_state.state
       ) {
-        config = {};
         run();
       }
     })
@@ -184,7 +182,6 @@ function mutationWatch(mutations, nodename, observeElem) {
             childList: true,
           });
         } else {
-          config = {};
           run();
         }
         return;
