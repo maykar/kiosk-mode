@@ -54,6 +54,7 @@ resources:
 
 # Configuration
 
+* If you need to disable Kiosk-Mode temporarily add `?disable_km` to the end of your URL.
 * Config is placed in the root of your Lovelace config: `kiosk_mode:` should not be indented & is per dashboard.
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
 
