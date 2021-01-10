@@ -33,7 +33,7 @@ function queryString(keywords) {
 
 // Set localStorage item.
 function setCache(k, v) {
-  window.localStorage.setItem(k, v);
+  array(k).forEach((x) => window.localStorage.setItem(x, v))
 }
 
 // Retrieve localStorage item as bool.
@@ -137,7 +137,7 @@ function kioskMode(lovelace, config) {
 }
 
 // Clear cache if requested.
-if (queryString("clear_km_cache")) ["kmHeader", "kmSidebar"].forEach((k) => setCache(k, "false"));
+if (queryString("clear_km_cache")) setCache(["kmHeader", "kmSidebar"], "false");
 
 // Initial run.
 run();
