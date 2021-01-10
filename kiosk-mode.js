@@ -2,6 +2,7 @@ const ha = document.querySelector("home-assistant");
 const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
 const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
+const user = ha.hass.user;
 let llAttempts = 0;
 window.kiosk_entities = [];
 
@@ -33,7 +34,7 @@ function queryString(keywords) {
 
 // Set localStorage item.
 function setCache(k, v) {
-  array(k).forEach((x) => window.localStorage.setItem(x, v))
+  array(k).forEach((x) => window.localStorage.setItem(x, v));
 }
 
 // Retrieve localStorage item as bool.
@@ -65,9 +66,9 @@ function removeStyle(elements) {
 
 function kioskMode(lovelace, config) {
   llAttempts = 0;
-  const hass = ha.hass;
   const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
   const appToolbar = huiRoot.querySelector("app-toolbar");
+  const states = ha.hass.states;
   const adminConfig = config.admin_settings;
   const nonAdminConfig = config.non_admin_settings;
   const entityConfig = config.entity_settings;
@@ -83,13 +84,13 @@ function kioskMode(lovelace, config) {
   hideHeader = queryStringsSet ? hideHeader : config.kiosk || config.hide_header;
   hideSidebar = queryStringsSet ? hideSidebar : config.kiosk || config.hide_sidebar;
 
-  if (adminConfig && hass.user.is_admin) {
+  if (adminConfig && user.is_admin) {
     hideHeader = adminConfig.kiosk || adminConfig.hide_header;
     hideSidebar = adminConfig.kiosk || adminConfig.hide_sidebar;
     ignoreEntity = adminConfig.ignore_entity_settings;
   }
 
-  if (nonAdminConfig && !hass.user.is_admin) {
+  if (nonAdminConfig && !user.is_admin) {
     hideHeader = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
     hideSidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
     ignoreEntity = nonAdminConfig.ignore_entity_settings;
@@ -97,7 +98,7 @@ function kioskMode(lovelace, config) {
 
   if (userConfig) {
     for (let conf of array(userConfig)) {
-      if (array(conf.users).some((x) => x.toLowerCase() == hass.user.name.toLowerCase())) {
+      if (array(conf.users).some((x) => x.toLowerCase() == user.name.toLowerCase())) {
         hideHeader = conf.kiosk || conf.hide_header;
         hideSidebar = conf.kiosk || conf.hide_sidebar;
         ignoreEntity = conf.ignore_entity_settings;
@@ -110,7 +111,7 @@ function kioskMode(lovelace, config) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
       if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity);
-      if (hass.states[entity].state == state) {
+      if (states[entity].state == state) {
         if ("hide_header" in conf) hideHeader = conf.hide_header;
         if ("hide_sidebar" in conf) hideSidebar = conf.hide_sidebar;
         if ("kiosk" in conf) hideHeader = hideSidebar = conf.kiosk;
