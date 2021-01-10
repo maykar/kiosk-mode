@@ -119,7 +119,7 @@ function kioskMode(lovelace, config) {
   }
 
   if (hideHeader) {
-    addStyle("#view{min-height:100vh !important}app-header{display:none}", huiRoot);
+    addStyle("#view{min-height:100vh !important; --header-height: 0}app-header{display:none}", huiRoot);
     if (queryString("cache")) setCache("kmHeader", "true");
   } else {
     removeStyle(huiRoot);
