@@ -175,10 +175,10 @@ function entityWatch() {
     };
     // Watch for entity state changes.
     conn.socket.onmessage = (e) => {
-      const entities = window.kiosk_entities[ha.hass.panelUrl];
-      if (e.data && entities && entities.some((x) => e.data.includes(x) && e.data.includes("state_changed"))) {
-        const event = JSON.parse(e.data).event;
-        if (event.data.new_state.state != event.data.old_state.state) run();
+      const ent = window.kiosk_entities[ha.hass.panelUrl];
+      if (e.data && ent && ent.length && ent.some((x) => e.data.includes(x) && e.data.includes("state_changed"))) {
+        const event = JSON.parse(e.data).event.data;
+        if (event.new_state.state != event.old_state.state) run();
       }
     };
   });
@@ -205,20 +205,14 @@ function appLayoutWatch(mutations) {
 
 // Reusable function for observers.
 function mutationWatch(mutations, nodename, observeElem) {
-  for (let mutation of mutations) {
-    for (let node of mutation.addedNodes) {
+  mutations.forEach((mutation) => {
+    mutation.addedNodes.forEach((node) => {
       if (node.localName == nodename) {
-        if (observeElem) {
-          new MutationObserver(observeElem).observe(node.shadowRoot, {
-            childList: true,
-          });
-        } else {
-          run();
-        }
-        return;
+        if (observeElem) new MutationObserver(observeElem).observe(node.shadowRoot, { childList: true });
+        else run();
       }
-    }
-  }
+    });
+  });
 }
 
 // Overly complicated console tag.
