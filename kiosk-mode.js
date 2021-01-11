@@ -4,25 +4,37 @@ const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 const user = ha.hass.user;
 let llAttempts = 0;
-window.kiosk_entities = [];
+window.kiosk_entities = {};
 
 function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
+
+  // Don't run if disabled via query string or not on a lovelace page.
   if (queryString("disable_km") || !lovelace) return;
-  getConfig(lovelace);
+
+  const dash = ha.hass.panelUrl;
+  if (!window.kiosk_entities[dash]) window.kiosk_entities[dash] = [];
+  getConfig(lovelace, dash);
 }
 
-function getConfig(lovelace) {
+// Wait 2 seconds for lovelace config, then run.
+function getConfig(lovelace, dash) {
   llAttempts++;
   try {
     const llConfig = lovelace.lovelace.config;
     const config = llConfig.kiosk_mode || {};
-    kioskMode(lovelace, config);
+    kioskMode(lovelace, config, dash);
   } catch {
-    if (llAttempts < 40) setTimeout(() => getConfig(lovelace), 50);
+    if (llAttempts < 40) {
+      setTimeout(() => getConfig(lovelace), 50);
+    } else {
+      console.log("Lovelace config not found, continuing with default configuration.");
+      kioskMode(lovelace, {}, dash);
+    }
   }
 }
 
+// Convert to array.
 function array(x) {
   return Array.isArray(x) ? x : [x];
 }
@@ -64,7 +76,7 @@ function removeStyle(elements) {
   });
 }
 
-function kioskMode(lovelace, config) {
+function kioskMode(lovelace, config, dash) {
   llAttempts = 0;
   const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
   const appToolbar = huiRoot.querySelector("app-toolbar");
@@ -84,18 +96,21 @@ function kioskMode(lovelace, config) {
   hideHeader = queryStringsSet ? hideHeader : config.kiosk || config.hide_header;
   hideSidebar = queryStringsSet ? hideSidebar : config.kiosk || config.hide_sidebar;
 
+  // Admin user's settings.
   if (adminConfig && user.is_admin) {
     hideHeader = adminConfig.kiosk || adminConfig.hide_header;
     hideSidebar = adminConfig.kiosk || adminConfig.hide_sidebar;
     ignoreEntity = adminConfig.ignore_entity_settings;
   }
 
+  // Non-Admin user settings.
   if (nonAdminConfig && !user.is_admin) {
     hideHeader = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
     hideSidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
     ignoreEntity = nonAdminConfig.ignore_entity_settings;
   }
 
+  // User Settings.
   if (userConfig) {
     for (let conf of array(userConfig)) {
       if (array(conf.users).some((x) => x.toLowerCase() == user.name.toLowerCase())) {
@@ -106,11 +121,12 @@ function kioskMode(lovelace, config) {
     }
   }
 
+  // Entity Settings.
   if (entityConfig && !ignoreEntity) {
     for (let conf of entityConfig) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
-      if (!window.kiosk_entities.includes(entity)) window.kiosk_entities.push(entity);
+      if (!window.kiosk_entities[dash].includes(entity)) window.kiosk_entities[dash].push(entity);
       if (states[entity].state == state) {
         if ("hide_header" in conf) hideHeader = conf.hide_header;
         if ("hide_sidebar" in conf) hideSidebar = conf.hide_sidebar;
@@ -119,6 +135,7 @@ function kioskMode(lovelace, config) {
     }
   }
 
+  // Hide or show header.
   if (hideHeader) {
     addStyle("#view{min-height:100vh !important;--header-height:0;}app-header{display:none;}", huiRoot);
     if (queryString("cache")) setCache("kmHeader", "true");
@@ -126,6 +143,7 @@ function kioskMode(lovelace, config) {
     removeStyle(huiRoot);
   }
 
+  // Hide or show sidebar and button.
   if (hideSidebar) {
     addStyle(":host{--app-drawer-width:0 !important;}#drawer{display:none;}", drawerLayout);
     addStyle("ha-menu-button{display:none !important;}", appToolbar);
@@ -134,6 +152,7 @@ function kioskMode(lovelace, config) {
     removeStyle([appToolbar, drawerLayout]);
   }
 
+  // Resize window to "refresh" view.
   window.dispatchEvent(new Event("resize"));
 }
 
@@ -147,14 +166,17 @@ run();
 function entityWatch() {
   window.hassConnection.then(({ conn }) => {
     if (!conn.connected) return;
+    // Reconnect on restart.
     conn.socket.onclose = () => {
       window.kiosk_interval = setInterval(() => {
         if (conn.connected) clearInterval(window.kiosk_interval);
         entityWatch();
       }, 5000);
     };
+    // Watch for entity state changes.
     conn.socket.onmessage = (e) => {
-      if (e.data && window.kiosk_entities.some((x) => e.data.includes(x) && e.data.includes("state_changed"))) {
+      const entities = window.kiosk_entities[ha.hass.panelUrl];
+      if (e.data && entities && entities.some((x) => e.data.includes(x) && e.data.includes("state_changed"))) {
         const event = JSON.parse(e.data).event;
         if (event.data.new_state.state != event.data.old_state.state) run();
       }
@@ -181,6 +203,7 @@ function appLayoutWatch(mutations) {
   mutationWatch(mutations, "ha-app-layout", null);
 }
 
+// Reusable function for observers.
 function mutationWatch(mutations, nodename, observeElem) {
   for (let mutation of mutations) {
     for (let node of mutation.addedNodes) {
