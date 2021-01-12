@@ -4,7 +4,7 @@ const panel = main.querySelector("partial-panel-resolver");
 const drawerLayout = main.querySelector("app-drawer-layout");
 const user = ha.hass.user;
 let llAttempts = 0;
-window.kiosk_entities = {};
+window.kioskModeEntities = {};
 
 function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
@@ -13,7 +13,7 @@ function run() {
   if (queryString("disable_km") || !lovelace) return;
 
   const dash = ha.hass.panelUrl;
-  if (!window.kiosk_entities[dash]) window.kiosk_entities[dash] = [];
+  if (!window.kioskModeEntities[dash]) window.kioskModeEntities[dash] = [];
   getConfig(lovelace, dash);
 }
 
@@ -126,7 +126,7 @@ function kioskMode(lovelace, config, dash) {
     for (let conf of entityConfig) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
-      if (!window.kiosk_entities[dash].includes(entity)) window.kiosk_entities[dash].push(entity);
+      if (!window.kioskModeEntities[dash].includes(entity)) window.kioskModeEntities[dash].push(entity);
       if (states[entity].state == state) {
         if ("hide_header" in conf) hideHeader = conf.hide_header;
         if ("hide_sidebar" in conf) hideSidebar = conf.hide_sidebar;
@@ -168,22 +168,23 @@ function entityWatch() {
     if (!conn.connected) return;
     // Reconnect on restart.
     conn.socket.onclose = () => {
-      window.kiosk_interval = setInterval(() => {
-        if (conn.connected) clearInterval(window.kiosk_interval);
+      window.kioskModeEntities.interval = setInterval(() => {
+        if (conn.connected) clearInterval(window.kioskModeEntities.interval);
         entityWatch();
       }, 5000);
     };
     // Watch for entity state changes.
     conn.socket.onmessage = (e) => {
-      const ent = window.kiosk_entities[ha.hass.panelUrl];
+      const ent = window.kioskModeEntities[ha.hass.panelUrl];
       if (e.data && ent && ent.length && ent.some((x) => e.data.includes(x) && e.data.includes("state_changed"))) {
         const event = JSON.parse(e.data).event.data;
         if (event.new_state.state != event.old_state.state) run();
       }
     };
+    window.kioskModeEntities.watch = true;
   });
 }
-entityWatch();
+if (!window.kioskModeEntities.watch) entityWatch();
 
 // Run on element changes.
 new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
