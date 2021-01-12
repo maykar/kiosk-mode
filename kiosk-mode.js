@@ -128,7 +128,7 @@ function kioskMode(lovelace, config, dash) {
 
   // Mobile settings.
   if (mobileConfig && !ignoreMobile) {
-    const mobileWidth = "custom_width" in mobileConfig ? mobileConfig.custom_width : 812;
+    const mobileWidth = mobileConfig.custom_width ? mobileConfig.custom_width : 812;
     if (window.innerWidth <= mobileWidth) {
       hideHeader = mobileConfig.kiosk || mobileConfig.hide_header;
       hideSidebar = mobileConfig.kiosk || mobileConfig.hide_sidebar;
