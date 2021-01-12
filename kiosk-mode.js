@@ -84,7 +84,8 @@ function kioskMode(lovelace, config, dash) {
   const adminConfig = config.admin_settings;
   const nonAdminConfig = config.non_admin_settings;
   const entityConfig = config.entity_settings;
-  let userConfig = config.user_settings;
+  const userConfig = config.user_settings;
+  const mobileConfig = config.mobile_settings;
   let ignoreEntity = false;
 
   // Retrieve localStorage values & query string options.
@@ -108,6 +109,17 @@ function kioskMode(lovelace, config, dash) {
     hideHeader = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
     hideSidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
     ignoreEntity = nonAdminConfig.ignore_entity_settings;
+  }
+
+  // Mobile settings.
+  if (mobileConfig) {
+    let mobile_width = 812;
+    if ("custom_width" in mobileConfig) mobile_width = mobileConfig.custom_width;
+    if (window.innerWidth <= mobile_width) {
+        hideHeader = mobileConfig.kiosk || mobileConfig.hide_header;
+      hideSidebar = mobileConfig.kiosk || mobileConfig.hide_sidebar;
+      ignoreEntity = mobileConfig.ignore_entity_settings;
+    }
   }
 
   // User Settings.

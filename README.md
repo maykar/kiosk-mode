@@ -102,6 +102,19 @@ kiosk_mode:
 ```
 <br>
 
+### mobile_settings:
+Sets the config for mobile devices. The default breakpoint is 812px, which can be changed by setting the `custom_width` option.<br>
+*Overwritten by user_settings & entity_settings ( unless `ignore_entity_settings` is used ).*<br>
+
+```
+kiosk_mode:
+  mobile_settings:
+    hide_header: true
+    ignore_entity_settings: true
+    custom_width: 768
+```
+<br>
+
 ### user_settings:
 Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.<br>
 *Overwritten by entity_settings if `ignore_entity_settings` is not used.*<br>
