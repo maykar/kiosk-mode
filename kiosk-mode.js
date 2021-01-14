@@ -138,6 +138,7 @@ function kioskMode(lovelace, config, dash) {
 
   // Entity Settings.
   if (entityConfig && !ignoreEntity) {
+    hideHeader = hideSidebar = false;
     for (let conf of entityConfig) {
       const entity = Object.keys(conf.entity)[0];
       const state = conf.entity[entity];
