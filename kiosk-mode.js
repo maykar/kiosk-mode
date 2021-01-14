@@ -84,8 +84,10 @@ function kioskMode(lovelace, config, dash) {
   const adminConfig = config.admin_settings;
   const nonAdminConfig = config.non_admin_settings;
   const entityConfig = config.entity_settings;
-  let userConfig = config.user_settings;
+  const userConfig = config.user_settings;
+  const mobileConfig = config.mobile_settings;
   let ignoreEntity = false;
+  let ignoreMobile = false;
 
   // Retrieve localStorage values & query string options.
   let hideHeader = cached("kmHeader") || queryString(["kiosk", "hide_header"]);
@@ -101,6 +103,7 @@ function kioskMode(lovelace, config, dash) {
     hideHeader = adminConfig.kiosk || adminConfig.hide_header;
     hideSidebar = adminConfig.kiosk || adminConfig.hide_sidebar;
     ignoreEntity = adminConfig.ignore_entity_settings;
+    ignoreMobile = adminConfig.ignore_mobile_settings;
   }
 
   // Non-Admin user settings.
@@ -108,6 +111,7 @@ function kioskMode(lovelace, config, dash) {
     hideHeader = nonAdminConfig.kiosk || nonAdminConfig.hide_header;
     hideSidebar = nonAdminConfig.kiosk || nonAdminConfig.hide_sidebar;
     ignoreEntity = nonAdminConfig.ignore_entity_settings;
+    ignoreMobile = nonAdminConfig.ignore_mobile_settings;
   }
 
   // User Settings.
@@ -117,7 +121,18 @@ function kioskMode(lovelace, config, dash) {
         hideHeader = conf.kiosk || conf.hide_header;
         hideSidebar = conf.kiosk || conf.hide_sidebar;
         ignoreEntity = conf.ignore_entity_settings;
+        ignoreMobile = conf.ignore_mobile_settings;
       }
+    }
+  }
+
+  // Mobile settings.
+  if (mobileConfig && !ignoreMobile) {
+    const mobileWidth = mobileConfig.custom_width ? mobileConfig.custom_width : 812;
+    if (window.innerWidth <= mobileWidth) {
+      hideHeader = mobileConfig.kiosk || mobileConfig.hide_header;
+      hideSidebar = mobileConfig.kiosk || mobileConfig.hide_sidebar;
+      ignoreEntity = mobileConfig.ignore_entity_settings;
     }
   }
 

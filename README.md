@@ -52,20 +52,24 @@ resources:
 
 *If you have trouble installing please [read this guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins)*
 
-# Configuration
+## Important Info
 
 * If you need to disable Kiosk-Mode temporarily add `?disable_km` to the end of your URL.
 * Config is placed in the root of your Lovelace config: `kiosk_mode:` should not be indented & is per dashboard.
 * If you want the same settings on other dashboards you'll need to repeat the config on those dashboards as well.
 * Refresh page after config changes.
 
-## Simple Lovelace Config
-The following config method will be ignored if any [query strings/cache](#query-strings) are used or a [conditional config](#conditional-lovelace-config) has a match.
+## Config Options
 
-* `kiosk_mode:` has 4 options: `kiosk`, `hide_header`, `hide_sidebar`, and `ignore_entity_settings`.
-* Set any config option to true to activate.
-* `kiosk: true` sets `hide_header` and `hide_sidebar` to true, no need to set either when it's used.
-* `ignore_entity_settings` is useful only in [conditional configs](#conditional-lovelace-config) and will cause `entity_settings` to be ignored.
+| Config Option | Type | Default | Description |
+|:---------------|:---------------|:---------------|:----------|
+|`kiosk:`| Boolean | false | Hides both the header and sidebar.
+|`hide_header:` | Boolean | false | Hides only the header.
+|`hide_sidebar:` | Boolean | false | Hides only the sidebar.
+|`ignore_entity_settings:` | Boolean | false | Useful for [conditional configs](#conditional-lovelace-config) and will cause `entity_settings` to be ignored.
+|`ignore_mobile_settings:` | Boolean | false | Useful for [conditional configs](#conditional-lovelace-config) and will cause `mobile_settings` to be ignored.
+
+## Simple config example
 
 ```
 kiosk_mode:
@@ -81,7 +85,7 @@ These use the same options as above, but placed under one of the following user/
 
 ### admin_settings:
 Sets the config for every admin user.<br>
-*Overwritten by user_settings & entity_settings ( unless `ignore_entity_settings` is used ).*<br>
+*Overwritten by user_settings, mobile_settings, and entity_settings ( unless one of the ignore options is used ).*<br>
 
 ```
 kiosk_mode:
@@ -92,7 +96,7 @@ kiosk_mode:
 
 ### non_admin_settings:
 Sets the config for every regular user.<br>
-*Overwritten by user_settings & entity_settings ( unless `ignore_entity_settings` is used ).*<br>
+*Overwritten by user_settings, mobile_settings, and entity_settings ( unless one of the ignore options is used ).*<br>
 
 ```
 kiosk_mode:
@@ -104,7 +108,7 @@ kiosk_mode:
 
 ### user_settings:
 Sets the config for specific users. **This uses a user's name, not their username (if they're different)**.<br>
-*Overwritten by entity_settings if `ignore_entity_settings` is not used.*<br>
+*Overwritten by mobile_settings, and entity_settings ( unless one of the ignore options is used ).*<br>
 
 ```
 kiosk_mode:
@@ -117,6 +121,19 @@ kiosk_mode:
         - "the wife"
       kiosk: true
       ignore_entity_settings: true
+```
+<br>
+
+### mobile_settings:
+Sets the config for mobile devices. The default breakpoint is 812px, which can be changed by setting the `custom_width` option.<br>
+*Overwritten by entity_settings, unless `ignore_entity_settings` is used, can be ignored with `ignore_mobile_settings`.*<br>
+
+```
+kiosk_mode:
+  mobile_settings:
+    hide_header: true
+    ignore_entity_settings: true
+    custom_width: 768
 ```
 <br>
 
