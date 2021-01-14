@@ -141,7 +141,7 @@ kiosk_mode:
 Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.<br>
 *Takes priority over all other config settings unless they use `ignore_entity_settings`.*<br><br>
 
-*Any false values will fall back to previous configurations if another "false" entity condition hasn't also been set (see the 2nd example).*
+*Any condition that doesn't match will then fall back to previous configurations if another "false" entity condition hasn't also been set (see the 2nd example).*
 ```
 kiosk_mode:
   entity_settings:
