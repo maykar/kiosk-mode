@@ -139,14 +139,20 @@ kiosk_mode:
 
 ### entity_settings:
 Dynamically change config on any entity's state. Under `entity:` list the entity followed by the state that will enable the config below. For more complex logic use this with a template sensor.<br>
-*Takes priority over all other config settings unless they use `ignore_entity_settings`.*<br>
-
+*Takes priority over all other config settings unless they use `ignore_entity_settings`.*<br><br>
+*Any false values will fall back to previous configurations if a false entity condition hasn't also been set (see the 2 input_boolean conditions below).*
 ```
 kiosk_mode:
   entity_settings:
+    # hide_sidebar has both true and false conditions to be a true override.
     - entity:
         input_boolean.hide_sidebar: 'on'
       hide_sidebar: true
+    - entity:
+        input_boolean.hide_sidebar: 'off'
+      hide_sidebar: false
+    # Since there is only a true condition for sensor.hide_header
+    # it will fall back any other condition where 'kiosk:' is true.
     - entity:
         sensor.hide_header: 'on'
       hide_header: true
