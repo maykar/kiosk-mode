@@ -1,10 +1,17 @@
-const ha = document.querySelector("home-assistant");
-const main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
-const panel = main.querySelector("partial-panel-resolver");
-const drawerLayout = main.querySelector("app-drawer-layout");
-const user = ha.hass.user;
+let ha, main, panel, drawerLayout, user;
 let llAttempts = 0;
 window.kioskModeEntities = {};
+
+Promise.resolve(customElements.whenDefined("hui-view")).then(() => {
+  ha = document.querySelector("home-assistant");
+  main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
+  panel = main.querySelector("partial-panel-resolver");
+  drawerLayout = main.querySelector("app-drawer-layout");
+  user = ha.hass.user;
+  run();
+  observer();
+  entityWatch();
+});
 
 function run() {
   const lovelace = main.querySelector("ha-panel-lovelace");
@@ -174,61 +181,57 @@ function kioskMode(lovelace, config, dash) {
 // Clear cache if requested.
 if (queryString("clear_km_cache")) setCache(["kmHeader", "kmSidebar"], "false");
 
-// Initial run.
-run();
-
 // Run on entity state change events.
-function entityWatch() {
-  window.hassConnection.then(({ conn }) => {
-    if (!conn.connected) return;
-    // Reconnect on restart.
-    conn.socket.onclose = () => {
-      window.kioskModeEntities.interval = setInterval(() => {
-        if (conn.connected) clearInterval(window.kioskModeEntities.interval);
-        entityWatch();
-      }, 5000);
-    };
-    // Watch for entity state changes.
-    conn.socket.onmessage = (e) => {
-      const ent = window.kioskModeEntities[ha.hass.panelUrl];
-      if (e.data && ent && ent.length && ent.some((x) => e.data.includes(x) && e.data.includes("state_changed"))) {
-        const event = JSON.parse(e.data).event.data;
-        if (event.new_state.state != event.old_state.state) run();
+async function entityWatch() {
+  (await window.hassConnection).conn.subscribeMessage(
+    (e) => {
+      const ent = window.kioskModeEntities[ha.hass.panelUrl] || [];
+      if (
+        ent.length &&
+        e.event_type == "state_changed" &&
+        ent.includes(e.data.entity_id) &&
+        (!e.data.old_state || e.data.new_state.state != e.data.old_state.state)
+      ) {
+        run();
       }
-    };
-    window.kioskModeEntities.watch = true;
-  });
+    },
+    {
+      type: "subscribe_events",
+      event_type: "state_changed",
+    }
+  );
 }
-if (!window.kioskModeEntities.watch) entityWatch();
 
 // Run on element changes.
-new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
+function observer() {
+  new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
 
-// If new lovelace panel was added watch for hui-root to appear.
-function lovelaceWatch(mutations) {
-  mutationWatch(mutations, "ha-panel-lovelace", rootWatch);
-}
+  // If new lovelace panel was added watch for hui-root to appear.
+  function lovelaceWatch(mutations) {
+    mutationWatch(mutations, "ha-panel-lovelace", rootWatch);
+  }
 
-// When hui-root appears watch it's children.
-function rootWatch(mutations) {
-  mutationWatch(mutations, "hui-root", appLayoutWatch);
-}
+  // When hui-root appears watch it's children.
+  function rootWatch(mutations) {
+    mutationWatch(mutations, "hui-root", appLayoutWatch);
+  }
 
-// When ha-app-layout appears we can run.
-function appLayoutWatch(mutations) {
-  mutationWatch(mutations, "ha-app-layout", null);
-}
+  // When ha-app-layout appears we can run.
+  function appLayoutWatch(mutations) {
+    mutationWatch(mutations, "ha-app-layout", null);
+  }
 
-// Reusable function for observers.
-function mutationWatch(mutations, nodename, observeElem) {
-  mutations.forEach((mutation) => {
-    mutation.addedNodes.forEach((node) => {
-      if (node.localName == nodename) {
-        if (observeElem) new MutationObserver(observeElem).observe(node.shadowRoot, { childList: true });
-        else run();
-      }
+  // Reusable function for observers.
+  function mutationWatch(mutations, nodename, observeElem) {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.localName == nodename) {
+          if (observeElem) new MutationObserver(observeElem).observe(node.shadowRoot, { childList: true });
+          else run();
+        }
+      });
     });
-  });
+  }
 }
 
 // Overly complicated console tag.
