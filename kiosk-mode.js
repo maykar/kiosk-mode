@@ -2,85 +2,6 @@ let ha, main, panel, drawerLayout, user;
 let llAttempts = 0;
 window.kioskModeEntities = {};
 
-Promise.resolve(customElements.whenDefined("hui-view")).then(() => {
-  ha = document.querySelector("home-assistant");
-  main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
-  panel = main.querySelector("partial-panel-resolver");
-  drawerLayout = main.querySelector("app-drawer-layout");
-  user = ha.hass.user;
-  run();
-  observer();
-  entityWatch();
-});
-
-function run(lovelace = main.querySelector("ha-panel-lovelace")) {
-  // Don't run if disabled via query string or not on a lovelace page.
-  if (queryString("disable_km") || !lovelace) return;
-
-  const dash = ha.hass.panelUrl;
-  if (!window.kioskModeEntities[dash]) window.kioskModeEntities[dash] = [];
-  getConfig(lovelace, dash);
-}
-
-// Wait 2 seconds for lovelace config, then run.
-function getConfig(lovelace, dash) {
-  llAttempts++;
-  try {
-    const llConfig = lovelace.lovelace.config;
-    const config = llConfig.kiosk_mode || {};
-    kioskMode(lovelace, config, dash);
-  } catch {
-    if (llAttempts < 40) {
-      setTimeout(() => getConfig(lovelace), 50);
-    } else {
-      console.log("Lovelace config not found, continuing with default configuration.");
-      kioskMode(lovelace, {}, dash);
-    }
-  }
-}
-
-// Convert to array.
-function array(x) {
-  return Array.isArray(x) ? x : [x];
-}
-
-// Return true if any keyword is found in query strings.
-function queryString(keywords) {
-  return array(keywords).some((x) => window.location.search.includes(x));
-}
-
-// Set localStorage item.
-function setCache(k, v) {
-  array(k).forEach((x) => window.localStorage.setItem(x, v));
-}
-
-// Retrieve localStorage item as bool.
-function cached(k) {
-  return window.localStorage.getItem(k) == "true";
-}
-
-// Check if element and style element exist.
-function styleExists(elem) {
-  return elem.querySelector(`#kiosk_mode_${elem.localName}`);
-}
-
-// Insert style element.
-function addStyle(css, elem) {
-  if (!styleExists(elem)) {
-    const style = document.createElement("style");
-    style.setAttribute("id", `kiosk_mode_${elem.localName}`);
-    style.innerHTML = css;
-    elem.appendChild(style);
-  }
-}
-
-// Remove style element.
-function removeStyle(elements) {
-  array(elements).forEach((elem) => {
-    if (styleExists(elem)) elem.querySelector(`#kiosk_mode_${elem.localName}`).remove();
-  });
-}
-
 function kioskMode(lovelace, config, dash) {
   llAttempts = 0;
   const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
@@ -179,6 +100,26 @@ function kioskMode(lovelace, config, dash) {
 // Clear cache if requested.
 if (queryString("clear_km_cache")) setCache(["kmHeader", "kmSidebar"], "false");
 
+Promise.resolve(customElements.whenDefined("hui-view")).then(() => {
+  ha = document.querySelector("home-assistant");
+  main = ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
+  panel = main.querySelector("partial-panel-resolver");
+  drawerLayout = main.querySelector("app-drawer-layout");
+  user = ha.hass.user;
+  run();
+  entityWatch();
+  new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
+});
+
+// Run on dashboard change.
+function lovelaceWatch(mutations) {
+  mutations.forEach((mutation) => {
+    mutation.addedNodes.forEach((node) => {
+      if (node.localName == "ha-panel-lovelace") run(node);
+    });
+  });
+}
+
 // Run on entity state change events.
 async function entityWatch() {
   (await window.hassConnection).conn.subscribeMessage(
@@ -200,16 +141,72 @@ async function entityWatch() {
   );
 }
 
-// Run on dashboard change.
-function observer() {
-  function lovelaceWatch(mutations) {
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node.localName == "ha-panel-lovelace") run(node);
-      });
-    });
+function run(lovelace = main.querySelector("ha-panel-lovelace")) {
+  // Don't run if disabled via query string or not on a lovelace page.
+  if (queryString("disable_km") || !lovelace) return;
+
+  const dash = ha.hass.panelUrl;
+  if (!window.kioskModeEntities[dash]) window.kioskModeEntities[dash] = [];
+  getConfig(lovelace, dash);
+}
+
+// Wait 2 seconds for lovelace config, then run.
+function getConfig(lovelace, dash) {
+  llAttempts++;
+  try {
+    const llConfig = lovelace.lovelace.config;
+    const config = llConfig.kiosk_mode || {};
+    kioskMode(lovelace, config, dash);
+  } catch {
+    if (llAttempts < 40) {
+      setTimeout(() => getConfig(lovelace), 50);
+    } else {
+      console.log("Lovelace config not found, continuing with default configuration.");
+      kioskMode(lovelace, {}, dash);
+    }
   }
-  new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
+}
+
+// Convert to array.
+function array(x) {
+  return Array.isArray(x) ? x : [x];
+}
+
+// Return true if any keyword is found in query strings.
+function queryString(keywords) {
+  return array(keywords).some((x) => window.location.search.includes(x));
+}
+
+// Set localStorage item.
+function setCache(k, v) {
+  array(k).forEach((x) => window.localStorage.setItem(x, v));
+}
+
+// Retrieve localStorage item as bool.
+function cached(k) {
+  return window.localStorage.getItem(k) == "true";
+}
+
+// Check if element and style element exist.
+function styleExists(elem) {
+  return elem.querySelector(`#kiosk_mode_${elem.localName}`);
+}
+
+// Insert style element.
+function addStyle(css, elem) {
+  if (!styleExists(elem)) {
+    const style = document.createElement("style");
+    style.setAttribute("id", `kiosk_mode_${elem.localName}`);
+    style.innerHTML = css;
+    elem.appendChild(style);
+  }
+}
+
+// Remove style element.
+function removeStyle(elements) {
+  array(elements).forEach((elem) => {
+    if (styleExists(elem)) elem.querySelector(`#kiosk_mode_${elem.localName}`).remove();
+  });
 }
 
 // Overly complicated console tag.
