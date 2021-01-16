@@ -13,9 +13,7 @@ Promise.resolve(customElements.whenDefined("hui-view")).then(() => {
   entityWatch();
 });
 
-function run() {
-  const lovelace = main.querySelector("ha-panel-lovelace");
-
+function run(lovelace = main.querySelector("ha-panel-lovelace")) {
   // Don't run if disabled via query string or not on a lovelace page.
   if (queryString("disable_km") || !lovelace) return;
 
@@ -202,36 +200,16 @@ async function entityWatch() {
   );
 }
 
-// Run on element changes.
+// Run on dashboard change.
 function observer() {
-  new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
-
-  // If new lovelace panel was added watch for hui-root to appear.
   function lovelaceWatch(mutations) {
-    mutationWatch(mutations, "ha-panel-lovelace", rootWatch);
-  }
-
-  // When hui-root appears watch it's children.
-  function rootWatch(mutations) {
-    mutationWatch(mutations, "hui-root", appLayoutWatch);
-  }
-
-  // When ha-app-layout appears we can run.
-  function appLayoutWatch(mutations) {
-    mutationWatch(mutations, "ha-app-layout", null);
-  }
-
-  // Reusable function for observers.
-  function mutationWatch(mutations, nodename, observeElem) {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
-        if (node.localName == nodename) {
-          if (observeElem) new MutationObserver(observeElem).observe(node.shadowRoot, { childList: true });
-          else run();
-        }
+        if (node.localName == "ha-panel-lovelace") run(node);
       });
     });
   }
+  new MutationObserver(lovelaceWatch).observe(panel, { childList: true });
 }
 
 // Overly complicated console tag.
