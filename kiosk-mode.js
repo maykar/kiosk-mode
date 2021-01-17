@@ -4,12 +4,13 @@ class KioskMode {
     if (this.queryString("clear_km_cache")) this.setCache(["kmHeader", "kmSidebar"], "false");
     this.ha = document.querySelector("home-assistant");
     this.main = this.ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
-    this.panel = this.main.querySelector("partial-panel-resolver");
     this.user = this.ha.hass.user;
     this.llAttempts = 0;
     this.run();
     this.entityWatch();
-    new MutationObserver(this.watchDashboards).observe(this.panel, { childList: true });
+    new MutationObserver(this.watchDashboards).observe(this.main.querySelector("partial-panel-resolver"), {
+      childList: true,
+    });
   }
 
   // Initial checks and setup.
@@ -41,11 +42,11 @@ class KioskMode {
     this.hideHeader = this.hideSidebar = this.ignoreEntity = this.ignoreMobile = false;
 
     // Retrieve localStorage values & query string options.
-    let queryStringsSet = false;
-    if (this.cached("kmHeader") || this.cached("kmSidebar") || this.queryString(["kiosk", "hide_sidebar"])) {
+    const queryStringsSet =
+      this.cached(["kmHeader", "kmSidebar"]) || this.queryString(["kiosk", "hide_sidebar", "hide_header"]);
+    if (queryStringsSet) {
       this.hideHeader = this.cached("kmHeader") || this.queryString(["kiosk", "hide_header"]);
       this.hideSidebar = this.cached("kmSidebar") || this.queryString(["kiosk", "hide_sidebar"]);
-      queryStringsSet = true;
     }
 
     // Use config values only if config strings and cache aren't used.
@@ -76,9 +77,8 @@ class KioskMode {
       const states = this.ha.hass.states;
       for (let conf of entityConfig) {
         const entity = Object.keys(conf.entity)[0];
-        const state = conf.entity[entity];
         if (!window.kioskModeEntities[dash].includes(entity)) window.kioskModeEntities[dash].push(entity);
-        if (states[entity].state == state) {
+        if (states[entity].state == conf.entity[entity]) {
           if ("hide_header" in conf) this.hideHeader = conf.hide_header;
           if ("hide_sidebar" in conf) this.hideSidebar = conf.hide_sidebar;
           if ("kiosk" in conf) this.hideHeader = this.hideSidebar = conf.kiosk;
@@ -172,8 +172,8 @@ class KioskMode {
   }
 
   // Retrieve localStorage item as bool.
-  cached(k) {
-    return window.localStorage.getItem(k) == "true";
+  cached(key) {
+    return this.array(key).some((x) => window.localStorage.getItem(x) == "true");
   }
 
   // Check if element and style element exist.
