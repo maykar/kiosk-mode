@@ -38,79 +38,64 @@ class KioskMode {
   }
 
   processConfig(lovelace, config, dash) {
-    let ignoreEntity = false;
-    let ignoreMobile = false;
+    this.hideHeader = this.hideSidebar = this.ignoreEntity = this.ignoreMobile = false;
 
     // Retrieve localStorage values & query string options.
-    let hideHeader = this.cached("kmHeader") || this.queryString(["kiosk", "hide_header"]);
-    let hideSidebar = this.cached("kmSidebar") || this.queryString(["kiosk", "hide_sidebar"]);
-    const queryStringsSet = hideSidebar || hideHeader;
+    let queryStringsSet = false;
+    if (this.cached("kmHeader") || this.cached("kmSidebar") || this.queryString(["kiosk", "hide_sidebar"])) {
+      this.hideHeader = this.cached("kmHeader") || this.queryString(["kiosk", "hide_header"]);
+      this.hideSidebar = this.cached("kmSidebar") || this.queryString(["kiosk", "hide_sidebar"]);
+      queryStringsSet = true;
+    }
 
     // Use config values only if config strings and cache aren't used.
-    hideHeader = queryStringsSet ? hideHeader : config.kiosk || config.hide_header;
-    hideSidebar = queryStringsSet ? hideSidebar : config.kiosk || config.hide_sidebar;
+    this.hideHeader = queryStringsSet ? this.hideHeader : config.kiosk || config.hide_header;
+    this.hideSidebar = queryStringsSet ? this.hideSidebar : config.kiosk || config.hide_sidebar;
 
     // Admin/non-admin settings.
     const adminConfig = this.user.is_admin ? config.admin_settings : config.non_admin_settings;
-    if (adminConfig) {
-      for (let conf of adminConfig) {
-        hideHeader = conf.kiosk || conf.hide_header;
-        hideSidebar = conf.kiosk || conf.hide_sidebar;
-        ignoreEntity = conf.ignore_entity_settings;
-        ignoreMobile = conf.ignore_mobile_settings;
-      }
-    }
+    if (adminConfig) for (let conf of adminConfig) this.setOptions(conf);
 
     // User Settings.
-    const userConfig = config.user_settings;
-    if (userConfig) {
-      for (let conf of this.array(userConfig)) {
-        if (this.array(conf.users).some((x) => x.toLowerCase() == this.user.name.toLowerCase())) {
-          hideHeader = conf.kiosk || conf.hide_header;
-          hideSidebar = conf.kiosk || conf.hide_sidebar;
-          ignoreEntity = conf.ignore_entity_settings;
-          ignoreMobile = conf.ignore_mobile_settings;
-        }
+    if (config.user_settings) {
+      for (let conf of this.array(config.user_settings)) {
+        if (this.array(conf.users).some((x) => x.toLowerCase() == this.user.name.toLowerCase())) this.setOptions(conf);
       }
     }
 
     // Mobile settings.
-    const mobileConfig = config.mobile_settings;
-    if (mobileConfig && !ignoreMobile) {
+    const mobileConfig = this.ignoreMobile ? null : config.mobile_settings;
+    if (mobileConfig) {
       const mobileWidth = mobileConfig.custom_width ? mobileConfig.custom_width : 812;
-      if (window.innerWidth <= mobileWidth) {
-        hideHeader = mobileConfig.kiosk || mobileConfig.hide_header;
-        hideSidebar = mobileConfig.kiosk || mobileConfig.hide_sidebar;
-        ignoreEntity = mobileConfig.ignore_entity_settings;
-      }
+      if (window.innerWidth <= mobileWidth) this.setOptions(mobileConfig);
     }
 
     // Entity Settings.
-    const entityConfig = config.entity_settings;
-    if (entityConfig && !ignoreEntity) {
+    const entityConfig = this.ignoreEntity ? null : config.entity_settings;
+    if (entityConfig) {
       const states = this.ha.hass.states;
       for (let conf of entityConfig) {
         const entity = Object.keys(conf.entity)[0];
         const state = conf.entity[entity];
         if (!window.kioskModeEntities[dash].includes(entity)) window.kioskModeEntities[dash].push(entity);
         if (states[entity].state == state) {
-          if ("hide_header" in conf) hideHeader = conf.hide_header;
-          if ("hide_sidebar" in conf) hideSidebar = conf.hide_sidebar;
-          if ("kiosk" in conf) hideHeader = hideSidebar = conf.kiosk;
+          if ("hide_header" in conf) this.hideHeader = conf.hide_header;
+          if ("hide_sidebar" in conf) this.hideSidebar = conf.hide_sidebar;
+          if ("kiosk" in conf) this.hideHeader = this.hideSidebar = conf.kiosk;
         }
       }
     }
 
-    this.insertStyles(lovelace, hideHeader, hideSidebar);
+    this.insertStyles(lovelace);
   }
 
-  insertStyles(lovelace, hideHeader, hideSidebar) {
+  insertStyles(lovelace) {
     const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
     const drawerLayout = this.main.querySelector("app-drawer-layout");
     const appToolbar = huiRoot.querySelector("app-toolbar");
 
     // Hide or show header.
-    if (hideHeader) {
+    if (this.hideHeader) {
       this.addStyle("#view{min-height:100vh !important;--header-height:0;}app-header{display:none;}", huiRoot);
       if (this.queryString("cache")) this.setCache("kmHeader", "true");
     } else {
@@ -118,7 +103,7 @@ class KioskMode {
     }
 
     // Hide or show sidebar and button.
-    if (hideSidebar) {
+    if (this.hideSidebar) {
       this.addStyle(":host{--app-drawer-width:0 !important;}#drawer{display:none;}", drawerLayout);
       this.addStyle("ha-menu-button{display:none !important;}", appToolbar);
       if (this.queryString("cache")) this.setCache("kmSidebar", "true");
@@ -162,6 +147,13 @@ class KioskMode {
     ) {
       this.run();
     }
+  }
+
+  setOptions(config) {
+    this.hideHeader = config.kiosk || config.hide_header;
+    this.hideSidebar = config.kiosk || config.hide_sidebar;
+    this.ignoreEntity = config.ignore_entity_settings;
+    this.ignoreMobile = config.ignore_mobile_settings;
   }
 
   // Convert to array.
