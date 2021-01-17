@@ -13,32 +13,32 @@ class KioskMode {
     });
   }
 
-  // Initial checks and setup.
+  // Initial check.
   run(lovelace = this.main.querySelector("ha-panel-lovelace")) {
     if (this.queryString("disable_km") || !lovelace) return;
-    const dash = this.ha.hass.panelUrl;
-    if (!window.kioskModeEntities[dash]) window.kioskModeEntities[dash] = [];
-    this.getConfig(lovelace, dash);
+    this.getConfig(lovelace);
   }
 
   // Wait for Lovelace config.
-  getConfig(lovelace, dash) {
+  getConfig(lovelace) {
     this.llAttempts++;
     try {
       const llConfig = lovelace.lovelace.config;
       const config = llConfig.kiosk_mode || {};
-      this.processConfig(lovelace, config, dash);
+      this.processConfig(lovelace, config);
     } catch {
       if (this.llAttempts < 100) {
         setTimeout(() => this.getConfig(lovelace), 50);
       } else {
         console.log("Lovelace config not found, continuing with default configuration.");
-        this.processConfig(lovelace, {}, dash);
+        this.processConfig(lovelace, {});
       }
     }
   }
 
-  processConfig(lovelace, config, dash) {
+  processConfig(lovelace, config) {
+    const dash = this.ha.hass.panelUrl;
+    if (!window.kioskModeEntities[dash]) window.kioskModeEntities[dash] = [];
     this.hideHeader = this.hideSidebar = this.ignoreEntity = this.ignoreMobile = false;
 
     // Retrieve localStorage values & query string options.
@@ -74,11 +74,10 @@ class KioskMode {
     // Entity Settings.
     const entityConfig = this.ignoreEntity ? null : config.entity_settings;
     if (entityConfig) {
-      const states = this.ha.hass.states;
       for (let conf of entityConfig) {
         const entity = Object.keys(conf.entity)[0];
         if (!window.kioskModeEntities[dash].includes(entity)) window.kioskModeEntities[dash].push(entity);
-        if (states[entity].state == conf.entity[entity]) {
+        if (this.ha.hass.states[entity].state == conf.entity[entity]) {
           if ("hide_header" in conf) this.hideHeader = conf.hide_header;
           if ("hide_sidebar" in conf) this.hideSidebar = conf.hide_sidebar;
           if ("kiosk" in conf) this.hideHeader = this.hideSidebar = conf.kiosk;
@@ -120,12 +119,7 @@ class KioskMode {
   // Run on dashboard change.
   watchDashboards(mutations) {
     mutations.forEach(({ addedNodes }) => {
-      for (let node of addedNodes) {
-        if (node.localName == "ha-panel-lovelace") {
-          window.KioskMode.run(node);
-          mutations = [];
-        }
-      }
+      for (let node of addedNodes) if (node.localName == "ha-panel-lovelace") window.KioskMode.run(node);
     });
   }
 
