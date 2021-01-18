@@ -13,13 +13,11 @@ class KioskMode {
     });
   }
 
-  // Initial check.
   run(lovelace = this.main.querySelector("ha-panel-lovelace")) {
     if (this.queryString("disable_km") || !lovelace) return;
     this.getConfig(lovelace);
   }
 
-  // Wait for Lovelace config.
   getConfig(lovelace) {
     this.llAttempts++;
     try {
@@ -53,25 +51,21 @@ class KioskMode {
     this.hideHeader = queryStringsSet ? this.hideHeader : config.kiosk || config.hide_header;
     this.hideSidebar = queryStringsSet ? this.hideSidebar : config.kiosk || config.hide_sidebar;
 
-    // Admin/non-admin settings.
     const adminConfig = this.user.is_admin ? config.admin_settings : config.non_admin_settings;
     if (adminConfig) for (let conf of adminConfig) this.setOptions(conf);
 
-    // User Settings.
     if (config.user_settings) {
       for (let conf of this.array(config.user_settings)) {
         if (this.array(conf.users).some((x) => x.toLowerCase() == this.user.name.toLowerCase())) this.setOptions(conf);
       }
     }
 
-    // Mobile settings.
     const mobileConfig = this.ignoreMobile ? null : config.mobile_settings;
     if (mobileConfig) {
       const mobileWidth = mobileConfig.custom_width ? mobileConfig.custom_width : 812;
       if (window.innerWidth <= mobileWidth) this.setOptions(mobileConfig);
     }
 
-    // Entity Settings.
     const entityConfig = this.ignoreEntity ? null : config.entity_settings;
     if (entityConfig) {
       for (let conf of entityConfig) {
@@ -93,7 +87,6 @@ class KioskMode {
     const drawerLayout = this.main.querySelector("app-drawer-layout");
     const appToolbar = huiRoot.querySelector("app-toolbar");
 
-    // Hide or show header.
     if (this.hideHeader) {
       this.addStyle("#view{min-height:100vh !important;--header-height:0;}app-header{display:none;}", huiRoot);
       if (this.queryString("cache")) this.setCache("kmHeader", "true");
@@ -101,7 +94,6 @@ class KioskMode {
       this.removeStyle(huiRoot);
     }
 
-    // Hide or show sidebar and button.
     if (this.hideSidebar) {
       this.addStyle(":host{--app-drawer-width:0 !important;}#drawer{display:none;}", drawerLayout);
       this.addStyle("ha-menu-button{display:none !important;}", appToolbar);
@@ -125,13 +117,13 @@ class KioskMode {
 
   // Run on entity change.
   async entityWatch() {
-    (await window.hassConnection).conn.subscribeMessage((e) => this.entityCallback(e), {
+    (await window.hassConnection).conn.subscribeMessage((e) => this.entityWatchCallback(e), {
       type: "subscribe_events",
       event_type: "state_changed",
     });
   }
 
-  entityCallback(event) {
+  entityWatchCallback(event) {
     const entities = window.kioskModeEntities[this.ha.hass.panelUrl] || [];
     if (
       entities.length &&
@@ -155,7 +147,7 @@ class KioskMode {
     return Array.isArray(x) ? x : [x];
   }
 
-  // Return true if any keyword is found in query strings.
+  // Return true if keyword is found in query strings.
   queryString(keywords) {
     return this.array(keywords).some((x) => window.location.search.includes(x));
   }
@@ -170,12 +162,10 @@ class KioskMode {
     return this.array(key).some((x) => window.localStorage.getItem(x) == "true");
   }
 
-  // Check if element and style element exist.
   styleExists(elem) {
     return elem.querySelector(`#kiosk_mode_${elem.localName}`);
   }
 
-  // Insert style element.
   addStyle(css, elem) {
     if (!this.styleExists(elem)) {
       const style = document.createElement("style");
@@ -185,7 +175,6 @@ class KioskMode {
     }
   }
 
-  // Remove style element.
   removeStyle(elements) {
     this.array(elements).forEach((elem) => {
       if (this.styleExists(elem)) elem.querySelector(`#kiosk_mode_${elem.localName}`).remove();
