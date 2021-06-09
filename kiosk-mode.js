@@ -1,7 +1,7 @@
 class KioskMode {
   constructor() {
     window.kioskModeEntities = {};
-    if (this.queryString("clear_km_cache")) this.setCache(["kmHeader", "kmSidebar"], "false");
+    if (this.queryString("clear_km_cache")) this.setCache(["kmHeader", "kmSidebar", "km3dotsMenu"], "false");
     this.ha = document.querySelector("home-assistant");
     this.main = this.ha.shadowRoot.querySelector("home-assistant-main").shadowRoot;
     this.user = this.ha.hass.user;
@@ -37,19 +37,21 @@ class KioskMode {
   processConfig(lovelace, config) {
     const dash = this.ha.hass.panelUrl;
     if (!window.kioskModeEntities[dash]) window.kioskModeEntities[dash] = [];
-    this.hideHeader = this.hideSidebar = this.ignoreEntity = this.ignoreMobile = false;
+    this.hideHeader = this.hideSidebar = this.hide3dotsMenu = this.ignoreEntity = this.ignoreMobile = false;
 
     // Retrieve localStorage values & query string options.
     const queryStringsSet =
-      this.cached(["kmHeader", "kmSidebar"]) || this.queryString(["kiosk", "hide_sidebar", "hide_header"]);
+      this.cached(["kmHeader", "kmSidebar", "km3dotsMenu"]) || this.queryString(["kiosk", "hide_sidebar", "hide_header", "hide_3dotsmenu"]);
     if (queryStringsSet) {
       this.hideHeader = this.cached("kmHeader") || this.queryString(["kiosk", "hide_header"]);
       this.hideSidebar = this.cached("kmSidebar") || this.queryString(["kiosk", "hide_sidebar"]);
+      this.hide3dotsMenu = this.cached("km3dotsMenu") || this.queryString(["kiosk", "hide_3dotsmenu"])
     }
 
     // Use config values only if config strings and cache aren't used.
     this.hideHeader = queryStringsSet ? this.hideHeader : config.kiosk || config.hide_header;
     this.hideSidebar = queryStringsSet ? this.hideSidebar : config.kiosk || config.hide_sidebar;
+    this.hide3dotsMenu = queryStringsSet ? this.hide3dotsMenu : config.kiosk || config.hide_3dotsmenu;
 
     const adminConfig = this.user.is_admin ? config.admin_settings : config.non_admin_settings;
     if (adminConfig) for (let conf of adminConfig) this.setOptions(conf);
@@ -74,6 +76,7 @@ class KioskMode {
         if (this.ha.hass.states[entity].state == conf.entity[entity]) {
           if ("hide_header" in conf) this.hideHeader = conf.hide_header;
           if ("hide_sidebar" in conf) this.hideSidebar = conf.hide_sidebar;
+          if ("hide_3dotsmenu" in conf) this.hide3dotsMenu = conf.hide_3dotsmenu;
           if ("kiosk" in conf) this.hideHeader = this.hideSidebar = conf.kiosk;
         }
       }
@@ -86,6 +89,7 @@ class KioskMode {
     const huiRoot = lovelace.shadowRoot.querySelector("hui-root").shadowRoot;
     const drawerLayout = this.main.querySelector("app-drawer-layout");
     const appToolbar = huiRoot.querySelector("app-toolbar");
+
 
     if (this.hideHeader) {
       this.addStyle("#view{min-height:100vh !important;--header-height:0;}app-header{display:none;}", huiRoot);
@@ -101,6 +105,14 @@ class KioskMode {
     } else {
       this.removeStyle([appToolbar, drawerLayout]);
     }
+    
+    if (this.hide3dotsMenu) {
+      this.addStyle("ha-button-menu{display:none !important;}", huiRoot);
+      if (this.queryString("cache")) this.setCache("km3dotsMenu", "true");
+    } else {
+      this.removeStyle(appToolbar);
+    }
+
 
     // Resize window to "refresh" view.
     window.dispatchEvent(new Event("resize"));
@@ -138,6 +150,7 @@ class KioskMode {
   setOptions(config) {
     this.hideHeader = config.kiosk || config.hide_header;
     this.hideSidebar = config.kiosk || config.hide_sidebar;
+    this.hide3dotsMenu = config.kiosk || config.hide_3dotsmenu
     this.ignoreEntity = config.ignore_entity_settings;
     this.ignoreMobile = config.ignore_mobile_settings;
   }
@@ -168,6 +181,7 @@ class KioskMode {
 
   addStyle(css, elem) {
     if (!this.styleExists(elem)) {
+      console.info("moj styl");
       const style = document.createElement("style");
       style.setAttribute("id", `kiosk_mode_${elem.localName}`);
       style.innerHTML = css;

@@ -66,6 +66,7 @@ resources:
 |`kiosk:`| Boolean | false | Hides both the header and sidebar.
 |`hide_header:` | Boolean | false | Hides only the header.
 |`hide_sidebar:` | Boolean | false | Hides only the sidebar.
+|`hide_3dotsmenu:` | Boolean | false | Hides the 3 dots menu.
 |`ignore_entity_settings:` | Boolean | false | Useful for [conditional configs](#conditional-lovelace-config) and will cause `entity_settings` to be ignored.
 |`ignore_mobile_settings:` | Boolean | false | Useful for [conditional configs](#conditional-lovelace-config) and will cause `mobile_settings` to be ignored.
 
@@ -181,6 +182,7 @@ The query string options are:
 * `?kiosk` to hide both header and sidebar
 * `?hide_header` to hide only the header
 * `?hide_sidebar` to hide only the sidebar
+* `?hide_3dotsmenu` to hide the 3 dots menu
 
 ## Query String Caching
 
