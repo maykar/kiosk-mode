@@ -90,7 +90,6 @@ class KioskMode {
     const drawerLayout = this.main.querySelector("app-drawer-layout");
     const appToolbar = huiRoot.querySelector("app-toolbar");
 
-
     if (this.hideHeader) {
       this.addStyle("#view{min-height:100vh !important;--header-height:0;}app-header{display:none;}", huiRoot);
       if (this.queryString("cache")) this.setCache("kmHeader", "true");
@@ -112,7 +111,6 @@ class KioskMode {
     } else {
       this.removeStyle(appToolbar);
     }
-
 
     // Resize window to "refresh" view.
     window.dispatchEvent(new Event("resize"));
