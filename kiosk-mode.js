@@ -24,11 +24,12 @@ class KioskMode {
       const llConfig = lovelace.lovelace.config;
       const config = llConfig.kiosk_mode || {};
       this.processConfig(lovelace, config);
-    } catch {
-      if (this.llAttempts < 300) {
+    } catch (e) {
+      if (this.llAttempts < 200) {
         setTimeout(() => this.getConfig(lovelace), 50);
       } else {
         console.log("Lovelace config not found, continuing with default configuration.");
+        console.log(e);
         this.processConfig(lovelace, {});
       }
     }
