@@ -94,8 +94,10 @@ class KioskMode {
 
     if (this.hideHeader || this.hideOverflow) {
       this.addStyle(`${this.hideHeader ? headerStyle : ""}${this.hideOverflow ? overflowStyle : ""}`, huiRoot);
-      if (this.hideHeader && this.queryString("cache")) this.setCache("kmHeader", "true");
-      if (this.hideOverflow && this.queryString("cache")) this.setCache("kmOverflow", "true");
+      if (this.queryString("cache")) {
+        if (this.hideHeader) this.setCache("kmHeader", "true");
+        if (this.hideOverflow) this.setCache("kmOverflow", "true");
+      }
     } else {
       this.removeStyle(huiRoot);
     }
