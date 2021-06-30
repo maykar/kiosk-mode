@@ -25,7 +25,7 @@ class KioskMode {
       const config = llConfig.kiosk_mode || {};
       this.processConfig(lovelace, config);
     } catch {
-      if (this.llAttempts < 100) {
+      if (this.llAttempts < 300) {
         setTimeout(() => this.getConfig(lovelace), 50);
       } else {
         console.log("Lovelace config not found, continuing with default configuration.");
