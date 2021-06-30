@@ -54,7 +54,7 @@ class KioskMode {
     this.hideOverflow = queryStringsSet ? this.hideOverflow : config.kiosk || config.hide_overflow;
 
     const adminConfig = this.user.is_admin ? config.admin_settings : config.non_admin_settings;
-    if (adminConfig) for (let conf of adminConfig) this.setOptions(conf);
+    if (adminConfig) this.setOptions(adminConfig);
 
     if (config.user_settings) {
       for (let conf of this.array(config.user_settings)) {
