@@ -93,7 +93,7 @@ class KioskMode {
     const headerStyle = "#view{min-height:100vh !important;--header-height:0;}app-header{display:none;}";
 
     if (this.hideHeader || this.hideOverflow) {
-      this.addStyle(`${this.hideheader ? headerStyle : ""}${this.hideOverflow ? overflowStyle : ""}`, huiRoot);
+      this.addStyle(`${this.hideHeader ? headerStyle : ""}${this.hideOverflow ? overflowStyle : ""}`, huiRoot);
       if (this.hideHeader && this.queryString("cache")) this.setCache("kmHeader", "true");
       if (this.hideOverflow && this.queryString("cache")) this.setCache("kmOverflow", "true");
     } else {
