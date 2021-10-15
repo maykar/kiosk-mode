@@ -184,6 +184,7 @@ The query string options are:
 * `?hide_header` to hide only the header
 * `?hide_sidebar` to hide only the sidebar
 * `?hide_overflow` to hide the top right menu
+* `?hide_menubutton` to hide sidebar menu button
 
 ## Query String Caching
 
