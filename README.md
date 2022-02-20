@@ -186,6 +186,8 @@ The query string options are:
 * `?hide_overflow` to hide the top right menu
 * `?hide_menubutton` to hide sidebar menu button
 
+Multiple options can be combined together by separating them using `&`. For example, `?hide_sidebar&hide_overflow` will hide both the sidebar and the top right menu, but keep the header
+
 ## Query String Caching
 
 You save settings in a devices cache by using the cache keyword once on the device.<br>This will also make it so the options work on all views and dashboards.
