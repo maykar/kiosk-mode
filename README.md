@@ -34,7 +34,7 @@ resources:
 <details>
   <summary><b>Manual installation</b></summary>
 <br>
-  
+
 * Download [kiosk-mode.js](https://github.com/matt8707/kiosk-mode/releases/latest) from the latest release and place it in your `www` folder
 * Add the resource below
 
@@ -68,6 +68,7 @@ resources:
 |`hide_sidebar:` | Boolean | false | Hides only the sidebar. Disables swipe to open.
 |`hide_menubutton:` | Boolean | false | Hides only the sidebar menu icon. Does not disable swipe to open.
 |`hide_overflow:` | Boolean | false | Hides the top right menu.
+|`hide_account:` | Boolean | false | Hides the account icon.
 |`ignore_entity_settings:` | Boolean | false | Useful for [conditional configs](#conditional-lovelace-config) and will cause `entity_settings` to be ignored.
 |`ignore_mobile_settings:` | Boolean | false | Useful for [conditional configs](#conditional-lovelace-config) and will cause `mobile_settings` to be ignored.
 
@@ -76,7 +77,7 @@ resources:
 ```
 kiosk_mode:
   hide_header: true
-  
+
 views:
 ```
 *Note: `views:` is added in the example above to show where `kiosk_mode:` should be placed in your Lovelace config*<br><br>
@@ -185,6 +186,7 @@ The query string options are:
 * `?hide_sidebar` to hide only the sidebar
 * `?hide_overflow` to hide the top right menu
 * `?hide_menubutton` to hide sidebar menu button
+* `?hide_account` to hide the account icon
 
 ## Query String Caching
 
